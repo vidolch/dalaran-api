@@ -1,5 +1,6 @@
 ﻿using JSONMockifyAPI.Data.Models;
 using JSONMockifyAPI.Services.Data.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,6 +24,24 @@ namespace JSONMockifyAPI.Services.Data
         public IEnumerable<JSONMock> GetAll()
         {
             return _jsonMocks.OrderBy(j => j.ID);
+        }
+
+        public JSONMock GetById(Guid id)
+        {
+            return _jsonMocks.FirstOrDefault(j => j.ID == id);
+        }
+
+        public bool Delete(Guid id)
+        {
+            _jsonMocks.RemoveAll(j => j.ID == id);
+            return true;
+        }
+
+        public bool Update(JSONMock model)
+        {
+            var modelToUpdate =_jsonMocks.FirstOrDefault(j => j.ID == model.ID);
+            modelToUpdate = model;
+            return true;
         }
     }
 }

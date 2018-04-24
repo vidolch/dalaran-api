@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using JSONMockifyAPI.Data.Models;
 using JSONMockifyAPI.Services.Data.Contracts;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JSONMockify.Web.APIClient.Controllers
@@ -15,38 +15,48 @@ namespace JSONMockify.Web.APIClient.Controllers
         {
             _jSONMockService = jSONMockService;
         }
-        // GET api/jsonmock
-        [HttpGet]
-        public IEnumerable<JSONMock> Get()
+        
+        [HttpGet()]
+        public IActionResult Get()
         {
-            return _jSONMockService.GetAll();
+            return Ok(_jSONMockService.GetAll());
         }
-
-        // GET api/jsonmock/5
-        [HttpGet("{id}")]
-        public string Get(Guid id)
+        
+        [HttpGet("{id}", Name = "GetMock")]
+        public IActionResult Get(Guid id)
         {
-            return "value";
+            return Ok(_jSONMockService.GetById(id));
         }
-
-        // POST api/jsonmock
-        [HttpPost]
-        public JSONMock Post([FromBody] JSONMock newJSONMock)
+        
+        [HttpPost()]
+        public IActionResult Post([FromBody] JSONMock newJSONMock)
         {
             var jsonMock = _jSONMockService.Add(newJSONMock);
-            return jsonMock;
+            return CreatedAtRoute("GetMock", jsonMock);
         }
 
         // PUT api/jsonmock/5
         [HttpPut("{id}")]
-        public void Put(Guid id, [FromBody]string value)
+        public IActionResult Put(Guid id, [FromBody] JSONMock updatedMock)
         {
+            var jsonMock = _jSONMockService.Update(updatedMock);
+            return NoContent();
         }
 
-        // DELETE api/jsonmock/5
-        [HttpDelete("{id}")]
-        public void Delete(Guid id)
+        [HttpPatch("{id}")]
+        public IActionResult Patch(Guid id, [FromBody] JsonPatchDocument<JSONMock> updatedMock)
         {
+            JSONMock model = new JSONMock();
+            updatedMock.ApplyTo(model);
+            var jsonMock = _jSONMockService.Update(model);
+            return NoContent();
+        }
+        
+        [HttpDelete("{id}")]
+        public IActionResult Delete(Guid id)
+        {
+            var jsonMock = _jSONMockService.Delete(id);
+            return NoContent();
         }
     }
 }
