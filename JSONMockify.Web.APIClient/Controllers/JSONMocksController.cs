@@ -25,20 +25,40 @@ namespace JSONMockify.Web.APIClient.Controllers
         [HttpGet("{id}", Name = "GetMock")]
         public IActionResult Get(Guid id)
         {
-            return Ok(_jSONMockService.GetById(id));
+            var result = _jSONMockService.GetById(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
         }
         
         [HttpPost()]
         public IActionResult Post([FromBody] JSONMock newJSONMock)
         {
+            if (newJSONMock == null)
+            {
+                return BadRequest();
+            }
+
             var jsonMock = _jSONMockService.Add(newJSONMock);
             return CreatedAtRoute("GetMock", jsonMock);
         }
-
-        // PUT api/jsonmock/5
+        
         [HttpPut("{id}")]
         public IActionResult Put(Guid id, [FromBody] JSONMock updatedMock)
         {
+            if (updatedMock == null)
+            {
+                return BadRequest();
+            }
+
+            if (!_jSONMockService.RecordExists(id))
+            {
+                return NotFound();
+            }
+
             var jsonMock = _jSONMockService.Update(updatedMock);
             return NoContent();
         }
@@ -46,6 +66,16 @@ namespace JSONMockify.Web.APIClient.Controllers
         [HttpPatch("{id}")]
         public IActionResult Patch(Guid id, [FromBody] JsonPatchDocument<JSONMock> updatedMock)
         {
+            if (updatedMock == null)
+            {
+                return BadRequest();
+            }
+
+            if (!_jSONMockService.RecordExists(id))
+            {
+                return NotFound();
+            }
+
             JSONMock model = new JSONMock();
             updatedMock.ApplyTo(model);
             var jsonMock = _jSONMockService.Update(model);
@@ -55,6 +85,11 @@ namespace JSONMockify.Web.APIClient.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
+            if (!_jSONMockService.RecordExists(id))
+            {
+                return NotFound();
+            }
+
             var jsonMock = _jSONMockService.Delete(id);
             return NoContent();
         }

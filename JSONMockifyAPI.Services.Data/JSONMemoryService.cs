@@ -43,5 +43,10 @@ namespace JSONMockifyAPI.Services.Data
             modelToUpdate = model;
             return true;
         }
+
+        public bool RecordExists(Guid id)
+        {
+            return _jsonMocks.Any(j => j.ID == id);
+        }
     }
 }

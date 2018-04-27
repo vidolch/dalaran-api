@@ -11,5 +11,6 @@ namespace JSONMockifyAPI.Services.Data.Contracts
         JSONMock GetById(Guid id);
         bool Delete(Guid id);
         bool Update(JSONMock model);
+        bool RecordExists(Guid id);
     }
 }
