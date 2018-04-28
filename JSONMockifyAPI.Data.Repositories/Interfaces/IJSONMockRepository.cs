@@ -2,7 +2,7 @@
 
 namespace JSONMockifyAPI.Data.Repositories.Interfaces
 {
-    public interface IJSONMockReposiory : IRepository<JSONMock>
+    public interface IJSONMockRepository : IRepository<JSONMock>
     {
     }
 }

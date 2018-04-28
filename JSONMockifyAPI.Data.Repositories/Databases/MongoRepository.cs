@@ -5,17 +5,19 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace JSONMockifyAPI.Data.Repositories
+namespace JSONMockifyAPI.Data.Repositories.Databases
 {
-    public class MongoRepository<TEntity> : IRepository<TEntity>
+    public class MongoRepository<TEntity> : IDBRepository<TEntity>
         where TEntity : BaseModel
     {
         protected IMongoDatabase db;
         protected IMongoCollection<TEntity> collection;
+        private IMongoClient _client;
 
-        public MongoRepository(IMongoDatabase db)
+        public MongoRepository()
         {
-            this.db = db;
+            _client = new MongoClient();
+            db = _client.GetDatabase("demoDb");
             this.collection = db.GetCollection<TEntity>(typeof(TEntity).Name);
         }
 
@@ -43,20 +45,30 @@ namespace JSONMockifyAPI.Data.Repositories
                 .AsQueryable<TEntity>();
         }
 
-        public TEntity GetById(Guid id)
+        public TEntity Get(Guid id)
         {
             return this.GetAll()
                 .FirstOrDefault(e => e.ID == id);
         }
 
-        public void Insert(TEntity entity)
+        public TEntity Insert(TEntity entity)
         {
+            entity.ID = Guid.NewGuid();
             this.collection.InsertOne(entity);
+            return entity;
         }
 
-        public void Update(TEntity entity)
+        public TEntity Update(TEntity entity)
         {
+            TEntity originalEntity = this.Get(entity.ID);
+            entity._id = originalEntity._id;
             this.collection.ReplaceOne(e => e.ID == entity.ID, entity);
+            return entity;
+        }
+
+        public bool RecordExists(Guid id)
+        {
+            return this.collection.Find<TEntity>(e => e.ID == id).Any();
         }
     }
 }

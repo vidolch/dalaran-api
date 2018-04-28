@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace JSONMockifyAPI.Data.Repositories.Interfaces
 {
-    public interface IRepository<TEntity>
+    public interface IDBRepository<TEntity>
         where TEntity : BaseModel
     {
         TEntity Get(Guid id);

@@ -1,5 +1,4 @@
 ﻿using JSONMockifyAPI.Services.Data;
-using JSONMockifyAPI.Services.Data.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +18,7 @@ namespace JSONMockify.Web.APIClient
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IJSONMockService, JSONMemoryService>();
+            services.AddServiceDataDependecies();
             services.AddMvc();
         }
 

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using JSONMockifyAPI.Data.Models;
 using JSONMockifyAPI.Services.Data.Contracts;
 using Microsoft.AspNetCore.JsonPatch;
@@ -19,13 +22,14 @@ namespace JSONMockify.Web.APIClient.Controllers
         [HttpGet()]
         public IActionResult Get()
         {
-            return Ok(_jSONMockService.GetAll());
+            IEnumerable<JSONMock> mocks = _jSONMockService.GetAll().ToList();
+            return Ok(mocks);
         }
         
         [HttpGet("{id}", Name = "GetMock")]
         public IActionResult Get(Guid id)
         {
-            var result = _jSONMockService.GetById(id);
+            var result = _jSONMockService.Get(id);
             if (result == null)
             {
                 return NotFound();
@@ -42,8 +46,8 @@ namespace JSONMockify.Web.APIClient.Controllers
                 return BadRequest();
             }
 
-            var jsonMock = _jSONMockService.Add(newJSONMock);
-            return CreatedAtRoute("GetMock", jsonMock);
+            var jsonMock = _jSONMockService.Create(newJSONMock);
+            return CreatedAtRoute("GetMock", new { id = jsonMock.ID }, jsonMock);
         }
         
         [HttpPut("{id}")]
@@ -58,7 +62,7 @@ namespace JSONMockify.Web.APIClient.Controllers
             {
                 return NotFound();
             }
-
+            updatedMock.ID = id;
             var jsonMock = _jSONMockService.Update(updatedMock);
             return NoContent();
         }
@@ -78,6 +82,7 @@ namespace JSONMockify.Web.APIClient.Controllers
 
             JSONMock model = new JSONMock();
             updatedMock.ApplyTo(model);
+            model.ID = id;
             var jsonMock = _jSONMockService.Update(model);
             return NoContent();
         }
@@ -90,7 +95,7 @@ namespace JSONMockify.Web.APIClient.Controllers
                 return NotFound();
             }
 
-            var jsonMock = _jSONMockService.Delete(id);
+            _jSONMockService.Delete(id);
             return NoContent();
         }
     }
