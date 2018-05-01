@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JSONMockifyAPI.Data.Models;
 using JSONMockifyAPI.Services.Data.Contracts;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JSONMockify.Web.APIClient.Controllers
 {
     [Route("api/mocks")]
+    [EnableCors("UI")]
     public class JSONMocksController : Controller
     {
         private IJSONMockService _jSONMockService;
