@@ -14,12 +14,21 @@ namespace JSONMockify.Web.APIClient
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.Custom.json", optional: true)
+                .AddJsonFile($"appsettings.{environmentName}.json", optional: true)
+                .AddCommandLine(args)
+                //.AddEnvironmentSecrets(args)
+                .Build();
+
+            BuildWebHostBuilder(args, configuration).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
+        public static IWebHostBuilder BuildWebHostBuilder(string[] args, IConfiguration configuration) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
+                .UseConfiguration(configuration)
+                .UseStartup<Startup>();
     }
 }

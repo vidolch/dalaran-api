@@ -13,7 +13,7 @@ namespace JSONMockifyAPI.Data.Models
 
         [Key]
         public Guid ID { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset CreatedTimestamp { get; set; }
+        public DateTimeOffset? UpdatedTimestamp { get; set; }
     }
 }

@@ -54,6 +54,7 @@ namespace JSONMockifyAPI.Data.Repositories.Databases
         public TEntity Insert(TEntity entity)
         {
             entity.ID = Guid.NewGuid();
+            entity.CreatedTimestamp = new DateTimeOffset();
             this.collection.InsertOne(entity);
             return entity;
         }
@@ -62,6 +63,7 @@ namespace JSONMockifyAPI.Data.Repositories.Databases
         {
             TEntity originalEntity = this.Get(entity.ID);
             entity._id = originalEntity._id;
+            entity.UpdatedTimestamp = new DateTimeOffset();
             this.collection.ReplaceOne(e => e.ID == entity.ID, entity);
             return entity;
         }
