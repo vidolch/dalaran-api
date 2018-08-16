@@ -3,6 +3,7 @@
 
 namespace JSONMockify.Web.APIClient
 {
+    using Ironclad.FilterAttributes;
     using JSONMockifyAPI.Data.Models;
     using JSONMockifyAPI.Data.Mongo;
     using JSONMockifyAPI.Data.Repositories;
@@ -47,7 +48,10 @@ namespace JSONMockify.Web.APIClient
             services.AddIdentityWithMongoStores(mongoConnectionString)
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            services.AddMvc(options =>
+                {
+                    options.Filters.Add(new RequestLogAttribute());
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
