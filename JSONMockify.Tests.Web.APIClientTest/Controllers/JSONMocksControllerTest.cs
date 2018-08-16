@@ -60,7 +60,7 @@ namespace Tests.Web.APIClientTest.Controllers
             mockRepo.Setup(repo => repo.Get(testGuid)).Returns(new JSONMock
             {
                 ID = testGuid,
-                CreatedAt = testCreated,
+                CreatedTimestamp = testCreated,
                 Template = testTemplate
             });
 
@@ -75,7 +75,7 @@ namespace Tests.Web.APIClientTest.Controllers
                 viewResult.Value);
             Assert.Equal(testGuid, model.ID);
             Assert.Equal(testTemplate, model.Template);
-            Assert.Equal(testCreated, model.CreatedAt);
+            Assert.Equal(testCreated, model.CreatedTimestamp);
         }
 
         [Fact]
@@ -249,13 +249,13 @@ namespace Tests.Web.APIClientTest.Controllers
             var mocks = new List<JSONMock>();
             mocks.Add(new JSONMock()
             {
-                CreatedAt = new DateTime(2016, 7, 2),
+                CreatedTimestamp = new DateTime(2016, 7, 2),
                 ID = new Guid(),
                 Template = "Test One"
             });
             mocks.Add(new JSONMock()
             {
-                CreatedAt = new DateTime(2016, 7, 3),
+                CreatedTimestamp = new DateTime(2016, 7, 3),
                 ID = new Guid(),
                 Template = "Test Two"
             });
