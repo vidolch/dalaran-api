@@ -7,9 +7,9 @@ namespace JSONMockifyAPI.Data.Repositories
     using JSONMockifyAPI.Data.Repositories.Databases;
     using JSONMockifyAPI.Data.Repositories.Interfaces;
 
-    public class JSONMockRepository : Repository<JSONMock>, IJSONMockRepository
+    public class JSONMockRepository : Repository<string, JSONMock>, IJSONMockRepository
     {
-        public JSONMockRepository(IDBRepository<JSONMock> dbInstance)
+        public JSONMockRepository(IDBRepository<string, JSONMock> dbInstance)
             : base(dbInstance)
         {
         }

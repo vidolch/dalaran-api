@@ -3,7 +3,12 @@
 
 namespace JSONMockify.Web.APIClient
 {
+    using JSONMockifyAPI.Data.Models;
+    using JSONMockifyAPI.Data.Mongo;
+    using JSONMockifyAPI.Data.Repositories;
+    using JSONMockifyAPI.Data.Repositories.Interfaces;
     using JSONMockifyAPI.Services.Data;
+    using JSONMockifyAPI.Services.Data.Contracts;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
@@ -31,8 +36,15 @@ namespace JSONMockify.Web.APIClient
                     .AllowAnyHeader()
                     .AllowAnyMethod());
             });
-            services.AddServiceDataDependecies();
-            services.AddIdentityWithMongoStores("mongodb://localhost/demoDb")
+
+            var mongoConnectionString = this.Configuration.GetConnectionString("mongo");
+            var mongoUrl = new MongoDB.Driver.MongoUrl(mongoConnectionString);
+
+            services.AddSingleton<IDBRepository<string, JSONMock>>(
+                new MongoRepository<string, JSONMock>(mongoUrl, nameof(JSONMock)));
+            services.AddTransient<IJSONMockRepository, JSONMockRepository>();
+            services.AddTransient<IJSONMockService, JSONMockService>();
+            services.AddIdentityWithMongoStores(mongoConnectionString)
                 .AddDefaultTokenProviders();
 
             services.AddMvc();

@@ -4,27 +4,24 @@
 namespace JSONMockifyAPI.Data.Repositories.Interfaces
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Threading.Tasks;
     using JSONMockifyAPI.Data.Models;
 
-    public interface IDBRepository<TEntity>
+    public interface IDBRepository<TIdentity, TEntity>
+        where TIdentity : class
         where TEntity : BaseModel
     {
-        TEntity Get(Guid id);
+        Task<(IEnumerable<TEntity>, long)> GetAllAsync(Expression<Func<TEntity, bool>> predicate = default, int page = default, int size = 20);
 
-        TEntity Insert(TEntity entity);
+        Task<TEntity> GetAsync(TIdentity identity);
 
-        TEntity Update(TEntity entity);
+        Task AddOrUpdateAsync(TIdentity identity, TEntity entity);
 
-        void Delete(TEntity entity);
+        Task<bool> DeleteAsync(TIdentity identity);
 
-        IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, int page, int size);
-
-        IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate);
-
-        IQueryable<TEntity> GetAll();
-
-        bool RecordExists(Guid id);
+        Task<bool> RecordExistsAsync(TIdentity identity);
     }
 }

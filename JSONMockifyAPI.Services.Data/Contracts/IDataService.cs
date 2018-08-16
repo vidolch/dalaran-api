@@ -5,23 +5,21 @@ namespace JSONMockifyAPI.Services.Data.Contracts
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
+    using System.Threading.Tasks;
     using JSONMockifyAPI.Data.Models;
 
-    public interface IDataService<TEntity>
+    public interface IDataService<TIdentity, TEntity>
         where TEntity : BaseModel
     {
-        IEnumerable<TEntity> GetAll();
+        Task<(IEnumerable<TEntity>, long)> GetAllAsync(Expression<Func<TEntity, bool>> predicate = default, int page = default, int size = 20);
 
-        TEntity Create(TEntity entity);
+        Task<TEntity> GetAsync(TIdentity identity);
 
-        TEntity Get(Guid id);
+        Task AddOrUpdateAsync(TIdentity identity, TEntity entity);
 
-        void Delete(TEntity entity);
+        Task<bool> DeleteAsync(TIdentity identity);
 
-        void Delete(Guid id);
-
-        TEntity Update(TEntity entity);
-
-        bool RecordExists(Guid id);
+        Task<bool> RecordExistsAsync(TIdentity identity);
     }
 }

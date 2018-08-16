@@ -5,13 +5,19 @@
     <CodeAnalysisRuleSet>../JSONMockify.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <AdditionalFiles Include="../stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.6.0" />
-    <PackageReference Include="MongoDB.Driver.Core" Version="2.6.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
   </ItemGroup>
 

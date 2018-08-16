@@ -7,58 +7,44 @@ namespace JSONMockifyAPI.Data.Repositories.Databases
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using System.Text;
+    using System.Threading.Tasks;
     using JSONMockifyAPI.Data.Models;
     using JSONMockifyAPI.Data.Repositories.Interfaces;
 
-    public abstract class Repository<TEntity> : IRepository<TEntity>
+    public abstract class Repository<TIdentity, TEntity> : IRepository<TIdentity, TEntity>
+        where TIdentity : class
         where TEntity : BaseModel
     {
-        private IDBRepository<TEntity> dbRepository;
+        private IDBRepository<TIdentity, TEntity> dbRepository;
 
-        public Repository(IDBRepository<TEntity> dbRepository)
+        public Repository(IDBRepository<TIdentity, TEntity> dbRepository)
         {
             this.dbRepository = dbRepository;
         }
 
-        public void Delete(TEntity entity)
+        public Task AddOrUpdateAsync(TIdentity identity, TEntity entity)
         {
-            this.dbRepository.Delete(entity);
+            return this.dbRepository.AddOrUpdateAsync(identity, entity);
         }
 
-        public TEntity Get(Guid id)
+        public Task<bool> DeleteAsync(TIdentity identity)
         {
-            return this.dbRepository.Get(id);
+            return this.dbRepository.DeleteAsync(identity);
         }
 
-        public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, int page, int size)
+        public Task<(IEnumerable<TEntity>, long)> GetAllAsync(Expression<Func<TEntity, bool>> predicate = null, int page = 0, int size = 20)
         {
-            return this.dbRepository.GetAll(predicate, page, size);
+            return this.dbRepository.GetAllAsync(predicate, page, size);
         }
 
-        public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate)
+        public Task<TEntity> GetAsync(TIdentity identity)
         {
-            return this.dbRepository.GetAll(predicate);
+            return this.dbRepository.GetAsync(identity);
         }
 
-        public IQueryable<TEntity> GetAll()
+        public Task<bool> RecordExistsAsync(TIdentity identity)
         {
-            return this.dbRepository.GetAll();
-        }
-
-        public TEntity Insert(TEntity entity)
-        {
-            return this.dbRepository.Insert(entity);
-        }
-
-        public bool RecordExists(Guid id)
-        {
-            return this.dbRepository.RecordExists(id);
-        }
-
-        public TEntity Update(TEntity entity)
-        {
-            return this.dbRepository.Update(entity);
+            return this.dbRepository.RecordExistsAsync(identity);
         }
     }
 }

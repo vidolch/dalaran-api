@@ -5,6 +5,7 @@ namespace JSONMockify.Web.APIClient.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using JSONMockifyAPI.Data.Models;
     using JSONMockifyAPI.Services.Data.Contracts;
@@ -26,14 +27,14 @@ namespace JSONMockify.Web.APIClient.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            IEnumerable<JSONMock> mocks = this.jSONMockService.GetAll().ToList();
+            IEnumerable<JSONMock> mocks = this.jSONMockService.GetAllAsync().GetAwaiter().GetResult().Item1;
             return this.Ok(mocks);
         }
 
         [HttpGet("{id}", Name = "GetMock")]
-        public IActionResult Get(Guid id)
+        public IActionResult Get(string id)
         {
-            var result = this.jSONMockService.Get(id);
+            var result = this.jSONMockService.GetAsync(id).GetAwaiter().GetResult();
             if (result == null)
             {
                 return this.NotFound();
@@ -49,38 +50,39 @@ namespace JSONMockify.Web.APIClient.Controllers
             {
                 return this.BadRequest();
             }
+            newJSONMock.ID = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
 
-            var jsonMock = this.jSONMockService.Create(newJSONMock);
-            return this.CreatedAtRoute("GetMock", new { id = jsonMock.ID }, jsonMock);
+            this.jSONMockService.AddOrUpdateAsync(newJSONMock.ID, newJSONMock);
+            return this.CreatedAtRoute("GetMock", new { id = newJSONMock.ID }, newJSONMock);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(Guid id, [FromBody] JSONMock updatedMock)
+        public IActionResult Put(string id, [FromBody] JSONMock updatedMock)
         {
             if (updatedMock == null)
             {
                 return this.BadRequest();
             }
 
-            if (!this.jSONMockService.RecordExists(id))
+            if (!this.jSONMockService.RecordExistsAsync(id).GetAwaiter().GetResult())
             {
                 return this.NotFound();
             }
 
             updatedMock.ID = id;
-            var jsonMock = this.jSONMockService.Update(updatedMock);
+            this.jSONMockService.AddOrUpdateAsync(updatedMock.ID, updatedMock);
             return this.NoContent();
         }
 
         [HttpPatch("{id}")]
-        public IActionResult Patch(Guid id, [FromBody] JsonPatchDocument<JSONMock> updatedMock)
+        public IActionResult Patch(string id, [FromBody] JsonPatchDocument<JSONMock> updatedMock)
         {
             if (updatedMock == null)
             {
                 return this.BadRequest();
             }
 
-            if (!this.jSONMockService.RecordExists(id))
+            if (!this.jSONMockService.RecordExistsAsync(id).GetAwaiter().GetResult())
             {
                 return this.NotFound();
             }
@@ -88,19 +90,19 @@ namespace JSONMockify.Web.APIClient.Controllers
             JSONMock model = new JSONMock();
             updatedMock.ApplyTo(model);
             model.ID = id;
-            var jsonMock = this.jSONMockService.Update(model);
+            this.jSONMockService.AddOrUpdateAsync(model.ID, model);
             return this.NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        public IActionResult Delete(string id)
         {
-            if (!this.jSONMockService.RecordExists(id))
+            if (!this.jSONMockService.RecordExistsAsync(id).GetAwaiter().GetResult())
             {
                 return this.NotFound();
             }
 
-            this.jSONMockService.Delete(id);
+            this.jSONMockService.DeleteAsync(id);
             return this.NoContent();
         }
     }

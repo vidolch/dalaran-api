@@ -23,7 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSONMockifyAPI.Data.Reposit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSONMockify.Tests.Web.APIClientTest", "JSONMockify.Tests.Web.APIClientTest\JSONMockify.Tests.Web.APIClientTest.csproj", "{AFB71297-372C-4159-B85D-2A4F020509B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONMockifyAPI.Services.Authentication", "JSONMockifyAPI.Services.Authentication\JSONMockifyAPI.Services.Authentication.csproj", "{9082B60F-F7D4-43D8-B7B3-EA440D3A9799}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSONMockifyAPI.Services.Authentication", "JSONMockifyAPI.Services.Authentication\JSONMockifyAPI.Services.Authentication.csproj", "{9082B60F-F7D4-43D8-B7B3-EA440D3A9799}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONMockifyAPI.Data.Mongo", "JSONMockifyAPI.Data.Mongo\JSONMockifyAPI.Data.Mongo.csproj", "{6BE8DE42-81F2-43D0-A0D1-D13784759AD1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{9082B60F-F7D4-43D8-B7B3-EA440D3A9799}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9082B60F-F7D4-43D8-B7B3-EA440D3A9799}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9082B60F-F7D4-43D8-B7B3-EA440D3A9799}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BE8DE42-81F2-43D0-A0D1-D13784759AD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BE8DE42-81F2-43D0-A0D1-D13784759AD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BE8DE42-81F2-43D0-A0D1-D13784759AD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BE8DE42-81F2-43D0-A0D1-D13784759AD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{583C3674-23C0-4E09-86FC-AB45EF08EA2B} = {7537618F-1BFA-4E3B-BF93-207052815F56}
 		{AFB71297-372C-4159-B85D-2A4F020509B3} = {5D52B653-0999-4B34-BE85-4AABC2DAF280}
 		{9082B60F-F7D4-43D8-B7B3-EA440D3A9799} = {04201313-81D7-445E-80A8-DCE70710E217}
+		{6BE8DE42-81F2-43D0-A0D1-D13784759AD1} = {7537618F-1BFA-4E3B-BF93-207052815F56}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {660C07D2-E02D-4EB5-883F-87B91BD8E6D8}

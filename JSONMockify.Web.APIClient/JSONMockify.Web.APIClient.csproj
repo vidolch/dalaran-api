@@ -6,6 +6,14 @@
     <CodeAnalysisRuleSet>../JSONMockify.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <AdditionalFiles Include="../stylecop.json" />
   </ItemGroup>
@@ -26,6 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\JSONMockifyAPI.Data.Mongo\JSONMockifyAPI.Data.Mongo.csproj" />
+    <ProjectReference Include="..\JSONMockifyAPI.Data.Repositories\JSONMockifyAPI.Data.Repositories.csproj" />
     <ProjectReference Include="..\JSONMockifyAPI.Services.Authentication\JSONMockifyAPI.Services.Authentication.csproj" />
     <ProjectReference Include="..\JSONMockifyAPI.Services.Data\JSONMockifyAPI.Services.Data.csproj" />
   </ItemGroup>

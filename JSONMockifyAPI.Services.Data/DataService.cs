@@ -5,57 +5,46 @@ namespace JSONMockifyAPI.Services.Data
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
+    using System.Threading.Tasks;
     using JSONMockifyAPI.Data.Models;
     using JSONMockifyAPI.Data.Repositories.Interfaces;
     using JSONMockifyAPI.Services.Data.Contracts;
 
-    public class DataService<TEntity> : IDataService<TEntity>
+    public class DataService<TIdentity, TEntity> : IDataService<TIdentity, TEntity>
+        where TIdentity : class
         where TEntity : BaseModel
     {
-        private IRepository<TEntity> repository;
+        private IRepository<TIdentity, TEntity> repository;
 
-        public DataService(IRepository<TEntity> repository)
+        public DataService(IRepository<TIdentity, TEntity> repository)
         {
             this.repository = repository;
         }
 
-        public TEntity Create(TEntity entity)
+        public Task AddOrUpdateAsync(TIdentity identity, TEntity entity)
         {
-            return this.repository.Insert(entity);
+            return this.repository.AddOrUpdateAsync(identity, entity);
         }
 
-        public IEnumerable<TEntity> GetAll()
+        public Task<bool> DeleteAsync(TIdentity identity)
         {
-            return this.repository.GetAll();
+            return this.repository.DeleteAsync(identity);
         }
 
-        public TEntity Get(Guid id)
+        public Task<(IEnumerable<TEntity>, long)> GetAllAsync(Expression<Func<TEntity, bool>> predicate = null, int page = 0, int size = 20)
         {
-            return this.repository.Get(id);
+            return this.repository.GetAllAsync(predicate, page, size);
         }
 
-        public void Delete(TEntity entity)
+        public Task<TEntity> GetAsync(TIdentity identity)
         {
-            this.repository.Delete(entity);
+            return this.repository.GetAsync(identity);
         }
 
-        public void Delete(Guid id)
+        public Task<bool> RecordExistsAsync(TIdentity identity)
         {
-            TEntity entity = this.Get(id);
-            if (entity != null)
-            {
-                this.repository.Delete(entity);
-            }
-        }
-
-        public TEntity Update(TEntity entity)
-        {
-            return this.repository.Update(entity);
-        }
-
-        public bool RecordExists(Guid id)
-        {
-            return this.repository.RecordExists(id);
+            return this.repository.RecordExistsAsync(identity);
         }
     }
 }

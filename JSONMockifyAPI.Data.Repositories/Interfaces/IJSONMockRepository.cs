@@ -5,7 +5,7 @@ namespace JSONMockifyAPI.Data.Repositories.Interfaces
 {
     using JSONMockifyAPI.Data.Models;
 
-    public interface IJSONMockRepository : IRepository<JSONMock>
+    public interface IJSONMockRepository : IRepository<string, JSONMock>
     {
     }
 }
