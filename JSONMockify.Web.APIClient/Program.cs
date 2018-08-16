@@ -4,18 +4,15 @@
 namespace JSONMockify.Web.APIClient
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
+    using Serilog;
+    using Serilog.Events;
 
     public class Program
     {
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var configuration = new ConfigurationBuilder()
@@ -27,10 +24,32 @@ namespace JSONMockify.Web.APIClient
                 // .AddEnvironmentSecrets(args)
                 .Build();
 
-            BuildWebHostBuilder(args, configuration).Build().Run();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .Enrich.WithMachineName()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+
+            try
+            {
+                Log.Information($"Starting JSONMockify web API");
+                CreateWebHostBuilder(args, configuration).Build().Run();
+                Log.Information($"JSONMockify web API stopped");
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Host terminated unexpectedly");
+                return 1;
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
-        public static IWebHostBuilder BuildWebHostBuilder(string[] args, IConfiguration configuration) =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args, IConfigurationRoot configuration) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>();
