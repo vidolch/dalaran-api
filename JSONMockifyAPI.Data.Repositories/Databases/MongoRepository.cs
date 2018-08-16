@@ -1,36 +1,43 @@
-﻿using JSONMockifyAPI.Data.Models;
-using JSONMockifyAPI.Data.Repositories.Interfaces;
-using MongoDB.Driver;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
+﻿// Copyright (c) Vidol Chalamov.
+// See the LICENSE file in the project root for more information.
 
 namespace JSONMockifyAPI.Data.Repositories.Databases
 {
+    using System;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using JSONMockifyAPI.Data.Models;
+    using JSONMockifyAPI.Data.Repositories.Interfaces;
+    using MongoDB.Driver;
+
     public class MongoRepository<TEntity> : IDBRepository<TEntity>
         where TEntity : BaseModel
     {
-        protected IMongoDatabase db;
-        protected IMongoCollection<TEntity> collection;
-        private IMongoClient _client;
+        private IMongoDatabase db;
+        private IMongoCollection<TEntity> collection;
+        private IMongoClient client;
 
         public MongoRepository()
         {
-            _client = new MongoClient();
-            db = _client.GetDatabase("demoDb");
-            this.collection = db.GetCollection<TEntity>(typeof(TEntity).Name);
+            this.client = new MongoClient();
+            this.Db = this.client.GetDatabase("demoDb");
+            this.Collection = this.Db.GetCollection<TEntity>(typeof(TEntity).Name);
         }
+
+        protected IMongoDatabase Db { get => this.db; set => this.db = value; }
+
+        protected IMongoCollection<TEntity> Collection { get => this.collection; set => this.collection = value; }
 
         public void Delete(TEntity entity)
         {
-            this.collection.DeleteOne(e => e.ID == entity.ID);
+            this.Collection.DeleteOne(e => e.ID == entity.ID);
         }
 
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, int page, int size)
         {
             return this.GetAll(predicate)
                 .Skip((page - 1) * size)
-                .Take(size); 
+                .Take(size);
         }
 
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate)
@@ -41,7 +48,7 @@ namespace JSONMockifyAPI.Data.Repositories.Databases
 
         public IQueryable<TEntity> GetAll()
         {
-            return this.collection
+            return this.Collection
                 .AsQueryable<TEntity>();
         }
 
@@ -54,8 +61,8 @@ namespace JSONMockifyAPI.Data.Repositories.Databases
         public TEntity Insert(TEntity entity)
         {
             entity.ID = Guid.NewGuid();
-            entity.CreatedTimestamp = new DateTimeOffset();
-            this.collection.InsertOne(entity);
+            entity.CreatedTimestamp = default(DateTimeOffset);
+            this.Collection.InsertOne(entity);
             return entity;
         }
 
@@ -63,14 +70,14 @@ namespace JSONMockifyAPI.Data.Repositories.Databases
         {
             TEntity originalEntity = this.Get(entity.ID);
             entity._id = originalEntity._id;
-            entity.UpdatedTimestamp = new DateTimeOffset();
-            this.collection.ReplaceOne(e => e.ID == entity.ID, entity);
+            entity.UpdatedTimestamp = default(DateTimeOffset);
+            this.Collection.ReplaceOne(e => e.ID == entity.ID, entity);
             return entity;
         }
 
         public bool RecordExists(Guid id)
         {
-            return this.collection.Find<TEntity>(e => e.ID == id).Any();
+            return this.Collection.Find<TEntity>(e => e.ID == id).Any();
         }
     }
 }

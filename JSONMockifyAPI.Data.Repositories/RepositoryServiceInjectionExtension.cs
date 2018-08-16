@@ -1,11 +1,14 @@
-﻿using JSONMockifyAPI.Data.Models;
-using JSONMockifyAPI.Data.Repositories.Databases;
-using JSONMockifyAPI.Data.Repositories.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Bson.Serialization;
+﻿// Copyright (c) Vidol Chalamov.
+// See the LICENSE file in the project root for more information.
 
 namespace JSONMockifyAPI.Data.Repositories
 {
+    using JSONMockifyAPI.Data.Models;
+    using JSONMockifyAPI.Data.Repositories.Databases;
+    using JSONMockifyAPI.Data.Repositories.Interfaces;
+    using Microsoft.Extensions.DependencyInjection;
+    using MongoDB.Bson.Serialization;
+
     public static class RepositoryServiceInjectionExtension
     {
         public static IServiceCollection AddRepositoryDependecies(this IServiceCollection services)

@@ -1,10 +1,13 @@
-﻿using JSONMockifyAPI.Data.Models;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
+﻿// Copyright (c) Vidol Chalamov.
+// See the LICENSE file in the project root for more information.
 
 namespace JSONMockifyAPI.Data.Repositories.Interfaces
 {
+    using System;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using JSONMockifyAPI.Data.Models;
+
     public interface IRepository<TEntity>
         where TEntity : BaseModel
     {

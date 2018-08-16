@@ -1,61 +1,64 @@
-﻿using JSONMockifyAPI.Data.Models;
-using JSONMockifyAPI.Data.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
+﻿// Copyright (c) Vidol Chalamov.
+// See the LICENSE file in the project root for more information.
 
 namespace JSONMockifyAPI.Data.Repositories.Databases
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Text;
+    using JSONMockifyAPI.Data.Models;
+    using JSONMockifyAPI.Data.Repositories.Interfaces;
+
     public abstract class Repository<TEntity> : IRepository<TEntity>
         where TEntity : BaseModel
     {
-        private IDBRepository<TEntity> _dbRepository;
+        private IDBRepository<TEntity> dbRepository;
 
         public Repository(IDBRepository<TEntity> dbRepository)
         {
-            _dbRepository = dbRepository;
+            this.dbRepository = dbRepository;
         }
 
         public void Delete(TEntity entity)
         {
-            _dbRepository.Delete(entity);
+            this.dbRepository.Delete(entity);
         }
 
         public TEntity Get(Guid id)
         {
-            return _dbRepository.Get(id);
+            return this.dbRepository.Get(id);
         }
 
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, int page, int size)
         {
-            return _dbRepository.GetAll(predicate, page, size);
+            return this.dbRepository.GetAll(predicate, page, size);
         }
 
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate)
         {
-            return _dbRepository.GetAll(predicate);
+            return this.dbRepository.GetAll(predicate);
         }
 
         public IQueryable<TEntity> GetAll()
         {
-            return _dbRepository.GetAll();
+            return this.dbRepository.GetAll();
         }
 
         public TEntity Insert(TEntity entity)
         {
-            return _dbRepository.Insert(entity);
+            return this.dbRepository.Insert(entity);
         }
 
         public bool RecordExists(Guid id)
         {
-            return _dbRepository.RecordExists(id);
+            return this.dbRepository.RecordExists(id);
         }
 
         public TEntity Update(TEntity entity)
         {
-            return _dbRepository.Update(entity);
+            return this.dbRepository.Update(entity);
         }
     }
 }

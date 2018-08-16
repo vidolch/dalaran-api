@@ -1,16 +1,19 @@
-﻿using JSONMockify.Web.APIClient.Controllers;
-using JSONMockifyAPI.Data.Models;
-using JSONMockifyAPI.Services.Data.Contracts;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using Xunit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.JsonPatch;
+﻿// Copyright (c) Vidol Chalamov.
+// See the LICENSE file in the project root for more information.
 
 namespace Tests.Web.APIClientTest.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using JSONMockify.Web.APIClient.Controllers;
+    using JSONMockifyAPI.Data.Models;
+    using JSONMockifyAPI.Services.Data.Contracts;
+    using Microsoft.AspNetCore.JsonPatch;
+    using Microsoft.AspNetCore.Mvc;
+    using Moq;
+    using Xunit;
+
     public class JSONMocksControllerTest
     {
         [Fact]
@@ -18,7 +21,7 @@ namespace Tests.Web.APIClientTest.Controllers
         {
             // Arrange
             var mockRepo = new Mock<IJSONMockService>();
-            mockRepo.Setup(repo => repo.GetAll()).Returns(GetTestJSONMocks());
+            mockRepo.Setup(repo => repo.GetAll()).Returns(this.GetTestJSONMocks());
             var controller = new JSONMocksController(mockRepo.Object);
 
             // Act
@@ -53,7 +56,7 @@ namespace Tests.Web.APIClientTest.Controllers
         public void CanGetMockById()
         {
             // Arrange
-            Guid testGuid = new Guid();
+            Guid testGuid = default(Guid);
             DateTimeOffset testCreated = new DateTime(2017, 12, 2);
             string testTemplate = "Test Template";
             var mockRepo = new Mock<IJSONMockService>();
@@ -82,7 +85,7 @@ namespace Tests.Web.APIClientTest.Controllers
         public void CanGetNoMockById()
         {
             // Arrange
-            Guid testGuid = new Guid();
+            Guid testGuid = default(Guid);
             var mockRepo = new Mock<IJSONMockService>();
             mockRepo.Setup(repo => repo.Get(testGuid)).Returns((JSONMock)null);
 
@@ -141,7 +144,7 @@ namespace Tests.Web.APIClientTest.Controllers
             {
                 Template = "Test Template"
             };
-            Guid testID = new Guid();
+            Guid testID = default(Guid);
             var mockRepo = new Mock<IJSONMockService>();
             mockRepo.Setup(repo => repo.Update(testJSONMock)).Returns(testJSONMock);
             mockRepo.Setup(repo => repo.RecordExists(testID)).Returns(true);
@@ -164,7 +167,7 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new JSONMocksController(mockRepo.Object);
 
             // Act
-            var result = controller.Put(new Guid(), null);
+            var result = controller.Put(default(Guid), null);
 
             // Assert
             var viewResult = Assert.IsType<BadRequestResult>(result);
@@ -178,7 +181,7 @@ namespace Tests.Web.APIClientTest.Controllers
             {
                 Template = "Test Template"
             };
-            Guid testID = new Guid();
+            Guid testID = default(Guid);
             var mockRepo = new Mock<IJSONMockService>();
             mockRepo.Setup(repo => repo.Update(testJSONMock)).Returns(testJSONMock);
             mockRepo.Setup(repo => repo.RecordExists(testID)).Returns(true);
@@ -201,7 +204,7 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new JSONMocksController(mockRepo.Object);
 
             // Act
-            var result = controller.Patch(new Guid(), null);
+            var result = controller.Patch(default(Guid), null);
 
             // Assert
             var viewResult = Assert.IsType<BadRequestResult>(result);
@@ -215,7 +218,7 @@ namespace Tests.Web.APIClientTest.Controllers
             {
                 Template = "Test Template"
             };
-            Guid testID = new Guid();
+            Guid testID = default(Guid);
             var mockRepo = new Mock<IJSONMockService>();
             mockRepo.Setup(repo => repo.Update(testJSONMock)).Returns(testJSONMock);
             mockRepo.Setup(repo => repo.RecordExists(testID)).Returns(true);
@@ -238,7 +241,7 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new JSONMocksController(mockRepo.Object);
 
             // Act
-            var result = controller.Delete(new Guid());
+            var result = controller.Delete(default(Guid));
 
             // Assert
             var viewResult = Assert.IsType<NotFoundResult>(result);
@@ -250,13 +253,13 @@ namespace Tests.Web.APIClientTest.Controllers
             mocks.Add(new JSONMock()
             {
                 CreatedTimestamp = new DateTime(2016, 7, 2),
-                ID = new Guid(),
+                ID = default(Guid),
                 Template = "Test One"
             });
             mocks.Add(new JSONMock()
             {
                 CreatedTimestamp = new DateTime(2016, 7, 3),
-                ID = new Guid(),
+                ID = default(Guid),
                 Template = "Test Two"
             });
             return mocks;

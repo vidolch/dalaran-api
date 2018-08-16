@@ -1,17 +1,20 @@
-﻿using JSONMockifyAPI.Services.Data;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿// Copyright (c) Vidol Chalamov.
+// See the LICENSE file in the project root for more information.
 
 namespace JSONMockify.Web.APIClient
 {
+    using JSONMockifyAPI.Services.Data;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         private IConfiguration Configuration { get; }
@@ -21,14 +24,15 @@ namespace JSONMockify.Web.APIClient
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("UI",
+                options.AddPolicy(
+                    "UI",
                     builder => builder
                     .WithOrigins("http://localhost:4200")
                     .AllowAnyHeader()
                     .AllowAnyMethod());
             });
             services.AddServiceDataDependecies();
-            services.AddIdentityWithMongoStores("mongodb://localhost/demoDb") 
+            services.AddIdentityWithMongoStores("mongodb://localhost/demoDb")
                 .AddDefaultTokenProviders();
 
             services.AddMvc();
