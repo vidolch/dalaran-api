@@ -3,10 +3,7 @@
 
 namespace JSONMockify.Web.APIClient.Controllers
 {
-    using System;
     using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
     using JSONMockifyAPI.Data.Models;
     using JSONMockifyAPI.Services.Data.Contracts;
     using Microsoft.AspNetCore.Cors;
@@ -50,7 +47,6 @@ namespace JSONMockify.Web.APIClient.Controllers
             {
                 return this.BadRequest();
             }
-            newJSONMock.ID = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
 
             this.jSONMockService.AddOrUpdateAsync(newJSONMock.ID, newJSONMock);
             return this.CreatedAtRoute("GetMock", new { id = newJSONMock.ID }, newJSONMock);
