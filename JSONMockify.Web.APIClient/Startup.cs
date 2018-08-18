@@ -15,6 +15,9 @@ namespace JSONMockify.Web.APIClient
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+    using Newtonsoft.Json.Serialization;
 
     public class Startup
     {
@@ -41,16 +44,23 @@ namespace JSONMockify.Web.APIClient
             var mongoConnectionString = this.Configuration.GetConnectionString("mongo");
             var mongoUrl = new MongoDB.Driver.MongoUrl(mongoConnectionString);
 
-            services.AddSingleton<IDBRepository<string, JSONMock>>(
-                new MongoRepository<string, JSONMock>(mongoUrl, nameof(JSONMock)));
+            services.AddSingleton<IDBRepository<JSONMock>>(
+                new MongoRepository<JSONMock>(mongoUrl, nameof(JSONMock)));
             services.AddTransient<IJSONMockRepository, JSONMockRepository>();
             services.AddTransient<IJSONMockService, JSONMockService>();
             services.AddIdentityWithMongoStores(mongoConnectionString)
                 .AddDefaultTokenProviders();
 
-            services.AddMvc(options =>
+            services
+                .AddMvcCore(options =>
                 {
                     options.Filters.Add(new RequestLogAttribute());
+                })
+                .AddJsonFormatters(serializerSettings =>
+                {
+                    serializerSettings.ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() };
+                    serializerSettings.Converters.Add(new StringEnumConverter());
+                    serializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 });
         }
 

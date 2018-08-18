@@ -11,26 +11,25 @@ namespace JSONMockifyAPI.Data.Repositories.Databases
     using JSONMockifyAPI.Data.Models;
     using JSONMockifyAPI.Data.Repositories.Interfaces;
 
-    public abstract class Repository<TIdentity, TEntity> : IRepository<TIdentity, TEntity>
-        where TIdentity : class
+    public abstract class Repository<TEntity> : IRepository<TEntity>
         where TEntity : BaseModel
     {
-        private IDBRepository<TIdentity, TEntity> dbRepository;
+        private IDBRepository<TEntity> dbRepository;
 
-        public Repository(IDBRepository<TIdentity, TEntity> dbRepository)
+        public Repository(IDBRepository<TEntity> dbRepository)
         {
             this.dbRepository = dbRepository;
         }
 
-        public virtual Task AddOrUpdateAsync(TIdentity identity, TEntity entity)
+        public virtual Task AddOrUpdateAsync(TEntity entity)
         {
-            entity.ID = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
+            entity.ID = entity.ID ?? Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
             entity.CreatedTimestamp = DateTimeOffset.Now;
 
-            return this.dbRepository.AddOrUpdateAsync(identity, entity);
+            return this.dbRepository.AddOrUpdateAsync(entity);
         }
 
-        public virtual Task<bool> DeleteAsync(TIdentity identity)
+        public virtual Task<bool> DeleteAsync(string identity)
         {
             return this.dbRepository.DeleteAsync(identity);
         }
@@ -40,12 +39,12 @@ namespace JSONMockifyAPI.Data.Repositories.Databases
             return this.dbRepository.GetAllAsync(predicate, page, size);
         }
 
-        public virtual Task<TEntity> GetAsync(TIdentity identity)
+        public virtual Task<TEntity> GetAsync(string identity)
         {
             return this.dbRepository.GetAsync(identity);
         }
 
-        public virtual Task<bool> RecordExistsAsync(TIdentity identity)
+        public virtual Task<bool> RecordExistsAsync(string identity)
         {
             return this.dbRepository.RecordExistsAsync(identity);
         }

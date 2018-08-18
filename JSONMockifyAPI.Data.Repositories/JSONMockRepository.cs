@@ -8,9 +8,9 @@ namespace JSONMockifyAPI.Data.Repositories
     using JSONMockifyAPI.Data.Repositories.Databases;
     using JSONMockifyAPI.Data.Repositories.Interfaces;
 
-    public class JSONMockRepository : Repository<string, JSONMock>, IJSONMockRepository
+    public class JSONMockRepository : Repository<JSONMock>, IJSONMockRepository
     {
-        public JSONMockRepository(IDBRepository<string, JSONMock> dbInstance)
+        public JSONMockRepository(IDBRepository<JSONMock> dbInstance)
             : base(dbInstance)
         {
         }
@@ -19,7 +19,7 @@ namespace JSONMockifyAPI.Data.Repositories
         {
             var result = await this.GetAsync(id);
 
-            if (result.HttpMethod != method)
+            if (result == null || result.HttpMethod != method)
             {
                 return null;
             }

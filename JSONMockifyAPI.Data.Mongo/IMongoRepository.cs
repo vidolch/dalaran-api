@@ -6,8 +6,7 @@ namespace JSONMockifyAPI.Data.Mongo
     using JSONMockifyAPI.Data.Models;
     using JSONMockifyAPI.Data.Repositories.Interfaces;
 
-    public interface IMongoRepository<TIdentity, TEntity> : IRepository<TIdentity, TEntity>
-        where TIdentity : class
+    public interface IMongoRepository<TIdentity, TEntity> : IRepository<TEntity>
         where TEntity : BaseModel
     {
     }

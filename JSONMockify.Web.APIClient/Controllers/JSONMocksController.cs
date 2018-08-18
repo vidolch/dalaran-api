@@ -48,7 +48,7 @@ namespace JSONMockify.Web.APIClient.Controllers
                 return this.BadRequest();
             }
 
-            this.jSONMockService.AddOrUpdateAsync(newJSONMock.ID, newJSONMock);
+            this.jSONMockService.AddOrUpdateAsync(newJSONMock);
             return this.CreatedAtRoute("GetMock", new { id = newJSONMock.ID }, newJSONMock);
         }
 
@@ -66,7 +66,7 @@ namespace JSONMockify.Web.APIClient.Controllers
             }
 
             updatedMock.ID = id;
-            this.jSONMockService.AddOrUpdateAsync(updatedMock.ID, updatedMock);
+            this.jSONMockService.AddOrUpdateAsync(updatedMock);
             return this.NoContent();
         }
 
@@ -86,7 +86,7 @@ namespace JSONMockify.Web.APIClient.Controllers
             JSONMock model = new JSONMock();
             updatedMock.ApplyTo(model);
             model.ID = id;
-            this.jSONMockService.AddOrUpdateAsync(model.ID, model);
+            this.jSONMockService.AddOrUpdateAsync(model);
             return this.NoContent();
         }
 

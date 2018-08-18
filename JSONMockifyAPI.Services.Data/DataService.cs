@@ -11,23 +11,22 @@ namespace JSONMockifyAPI.Services.Data
     using JSONMockifyAPI.Data.Repositories.Interfaces;
     using JSONMockifyAPI.Services.Data.Contracts;
 
-    public class DataService<TIdentity, TEntity> : IDataService<TIdentity, TEntity>
-        where TIdentity : class
+    public class DataService<TEntity> : IDataService<TEntity>
         where TEntity : BaseModel
     {
-        private IRepository<TIdentity, TEntity> repository;
+        private IRepository<TEntity> repository;
 
-        public DataService(IRepository<TIdentity, TEntity> repository)
+        public DataService(IRepository<TEntity> repository)
         {
             this.repository = repository;
         }
 
-        public Task AddOrUpdateAsync(TIdentity identity, TEntity entity)
+        public Task AddOrUpdateAsync(TEntity entity)
         {
-            return this.repository.AddOrUpdateAsync(identity, entity);
+            return this.repository.AddOrUpdateAsync(entity);
         }
 
-        public Task<bool> DeleteAsync(TIdentity identity)
+        public Task<bool> DeleteAsync(string identity)
         {
             return this.repository.DeleteAsync(identity);
         }
@@ -37,12 +36,12 @@ namespace JSONMockifyAPI.Services.Data
             return this.repository.GetAllAsync(predicate, page, size);
         }
 
-        public Task<TEntity> GetAsync(TIdentity identity)
+        public Task<TEntity> GetAsync(string identity)
         {
             return this.repository.GetAsync(identity);
         }
 
-        public Task<bool> RecordExistsAsync(TIdentity identity)
+        public Task<bool> RecordExistsAsync(string identity)
         {
             return this.repository.RecordExistsAsync(identity);
         }

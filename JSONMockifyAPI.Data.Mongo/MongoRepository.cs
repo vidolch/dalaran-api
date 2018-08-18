@@ -16,8 +16,7 @@ namespace JSONMockifyAPI.Data.Mongo
     using MongoDB.Bson.Serialization.Attributes;
     using MongoDB.Driver;
 
-    public class MongoRepository<TIdentity, TEntity> : IDBRepository<TIdentity, TEntity>
-        where TIdentity : class
+    public class MongoRepository<TEntity> : IDBRepository<TEntity>
         where TEntity : BaseModel
     {
         private static readonly FindOneAndReplaceOptions<Document> UpdateOptions = new FindOneAndReplaceOptions<Document> { IsUpsert = true };
@@ -54,28 +53,28 @@ namespace JSONMockifyAPI.Data.Mongo
             return (result.Select(document => document.Entity), count);
         }
 
-        public async Task<TEntity> GetAsync(TIdentity identity)
+        public async Task<TEntity> GetAsync(string identity)
         {
             var filter = Builders<Document>.Filter.Eq(x => x.Identity, identity);
             var document = await this.Collection.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
             return document?.Entity;
         }
 
-        public async Task AddOrUpdateAsync(TIdentity identity, TEntity entity)
+        public async Task AddOrUpdateAsync(TEntity entity)
         {
-            var document = new Document() { Identity = identity, Entity = entity };
-            var filter = Builders<Document>.Filter.Eq(x => x.Identity, identity);
+            var document = new Document() { Identity = entity.ID, Entity = entity };
+            var filter = Builders<Document>.Filter.Eq(x => x.Identity, entity.ID);
             await this.collection.FindOneAndReplaceAsync(filter, document, UpdateOptions).ConfigureAwait(false);
         }
 
-        public async Task<bool> DeleteAsync(TIdentity identity)
+        public async Task<bool> DeleteAsync(string identity)
         {
             var filter = Builders<Document>.Filter.Eq(x => x.Identity, identity);
             var document = await this.collection.FindOneAndDeleteAsync(filter).ConfigureAwait(false);
             return document != null;
         }
 
-        public async Task<bool> RecordExistsAsync(TIdentity identity)
+        public async Task<bool> RecordExistsAsync(string identity)
         {
             var filter = Builders<Document>.Filter.Eq(x => x.Identity, identity);
             var document = await this.collection.FindAsync(filter).ConfigureAwait(false);
@@ -127,7 +126,7 @@ namespace JSONMockifyAPI.Data.Mongo
         {
             [BsonId]
             [BsonRepresentation(BsonType.String)]
-            public TIdentity Identity { get; set; }
+            public string Identity { get; set; }
 
             public TEntity Entity { get; set; }
         }

@@ -5,23 +5,21 @@ namespace JSONMockifyAPI.Data.Repositories.Interfaces
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
     using JSONMockifyAPI.Data.Models;
 
-    public interface IDBRepository<TIdentity, TEntity>
-        where TIdentity : class
+    public interface IDBRepository<TEntity>
         where TEntity : BaseModel
     {
         Task<(IEnumerable<TEntity>, long)> GetAllAsync(Expression<Func<TEntity, bool>> predicate = default, int page = default, int size = 20);
 
-        Task<TEntity> GetAsync(TIdentity identity);
+        Task<TEntity> GetAsync(string identity);
 
-        Task AddOrUpdateAsync(TIdentity identity, TEntity entity);
+        Task AddOrUpdateAsync(TEntity entity);
 
-        Task<bool> DeleteAsync(TIdentity identity);
+        Task<bool> DeleteAsync(string identity);
 
-        Task<bool> RecordExistsAsync(TIdentity identity);
+        Task<bool> RecordExistsAsync(string identity);
     }
 }

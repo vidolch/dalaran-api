@@ -5,7 +5,7 @@ namespace JSONMockifyAPI.Services.Data.Contracts
 {
     using JSONMockifyAPI.Data.Models;
 
-    public interface IJSONMockService : IDataService<string, JSONMock>
+    public interface IJSONMockService : IDataService<JSONMock>
     {
     }
 }

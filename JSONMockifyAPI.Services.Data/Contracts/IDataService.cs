@@ -9,17 +9,17 @@ namespace JSONMockifyAPI.Services.Data.Contracts
     using System.Threading.Tasks;
     using JSONMockifyAPI.Data.Models;
 
-    public interface IDataService<TIdentity, TEntity>
+    public interface IDataService<TEntity>
         where TEntity : BaseModel
     {
         Task<(IEnumerable<TEntity>, long)> GetAllAsync(Expression<Func<TEntity, bool>> predicate = default, int page = default, int size = 20);
 
-        Task<TEntity> GetAsync(TIdentity identity);
+        Task<TEntity> GetAsync(string identity);
 
-        Task AddOrUpdateAsync(TIdentity identity, TEntity entity);
+        Task AddOrUpdateAsync(TEntity entity);
 
-        Task<bool> DeleteAsync(TIdentity identity);
+        Task<bool> DeleteAsync(string identity);
 
-        Task<bool> RecordExistsAsync(TIdentity identity);
+        Task<bool> RecordExistsAsync(string identity);
     }
 }
