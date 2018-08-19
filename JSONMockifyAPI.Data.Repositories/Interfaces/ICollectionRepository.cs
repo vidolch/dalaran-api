@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Vidol Chalamov.
 // See the LICENSE file in the project root for more information.
 
-namespace JSONMockifyAPI.Services.Data.Contracts
+namespace JSONMockifyAPI.Data.Repositories.Interfaces
 {
     using JSONMockifyAPI.Data.Models;
 
-    public interface IJSONMockService : IDataService<JSONMock>
+    public interface ICollectionRepository : IRepository<Collection>
     {
     }
 }

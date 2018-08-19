@@ -7,9 +7,9 @@ namespace JSONMockifyAPI.Services.Data
     using JSONMockifyAPI.Data.Repositories.Interfaces;
     using JSONMockifyAPI.Services.Data.Contracts;
 
-    public class JSONMockService : DataService<JSONMock>, IJSONMockService
+    public class CollectionService : DataService<Collection>, ICollectionService
     {
-        public JSONMockService(IJSONMockRepository repository)
+        public CollectionService(IRepository<Collection> repository)
             : base(repository)
         {
         }

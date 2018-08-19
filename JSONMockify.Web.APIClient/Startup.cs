@@ -44,10 +44,17 @@ namespace JSONMockify.Web.APIClient
             var mongoConnectionString = this.Configuration.GetConnectionString("mongo");
             var mongoUrl = new MongoDB.Driver.MongoUrl(mongoConnectionString);
 
-            services.AddSingleton<IDBRepository<JSONMock>>(
-                new MongoRepository<JSONMock>(mongoUrl, nameof(JSONMock)));
-            services.AddTransient<IJSONMockRepository, JSONMockRepository>();
-            services.AddTransient<IJSONMockService, JSONMockService>();
+            services.AddSingleton<IDBRepository<Request>>(
+                new MongoRepository<Request>(mongoUrl, nameof(Request)));
+            services.AddSingleton<IDBRepository<Collection>>(
+                new MongoRepository<Collection>(mongoUrl, nameof(Collection)));
+
+            services.AddTransient<IRequestRepository, RequestRepository>();
+            services.AddTransient<ICollectionRepository, CollectionRepository>();
+
+            services.AddTransient<IRequestService, RequestService>();
+            services.AddTransient<ICollectionService, CollectionService>();
+
             services.AddIdentityWithMongoStores(mongoConnectionString)
                 .AddDefaultTokenProviders();
 

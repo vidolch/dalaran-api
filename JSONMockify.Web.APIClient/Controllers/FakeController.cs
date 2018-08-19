@@ -13,17 +13,17 @@ namespace JSONMockify.Web.APIClient.Controllers
     [EnableCors("UI")]
     public class FakeController : Controller
     {
-        private readonly IJSONMockRepository mockRepository;
+        private readonly IRequestRepository requestRepository;
 
-        public FakeController(IJSONMockRepository mockRepository)
+        public FakeController(IRequestRepository requestRepository)
         {
-            this.mockRepository = mockRepository;
+            this.requestRepository = requestRepository;
         }
 
         [HttpGet("{id}", Name = "GetFake")]
         public async Task<IActionResult> GetAsync(string id)
         {
-            var result = await this.mockRepository.GetForMethodAsync(id, HttpMethods.GET);
+            var result = await this.requestRepository.GetForMethodAsync(id, HttpMethods.GET);
 
             if (result == null)
             {
@@ -36,7 +36,7 @@ namespace JSONMockify.Web.APIClient.Controllers
         [HttpPost("{id}", Name = "PostFake")]
         public async Task<IActionResult> PostAsync(string id, [FromBody]object content)
         {
-            var result = await this.mockRepository.GetForMethodAsync(id, HttpMethods.POST);
+            var result = await this.requestRepository.GetForMethodAsync(id, HttpMethods.POST);
 
             if (result == null)
             {

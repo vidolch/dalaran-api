@@ -8,14 +8,14 @@ namespace JSONMockifyAPI.Data.Repositories
     using JSONMockifyAPI.Data.Repositories.Databases;
     using JSONMockifyAPI.Data.Repositories.Interfaces;
 
-    public class JSONMockRepository : Repository<JSONMock>, IJSONMockRepository
+    public class RequestRepository : Repository<Request>, IRequestRepository
     {
-        public JSONMockRepository(IDBRepository<JSONMock> dbInstance)
+        public RequestRepository(IDBRepository<Request> dbInstance)
             : base(dbInstance)
         {
         }
 
-        public async Task<JSONMock> GetForMethodAsync(string id, HttpMethods method)
+        public async Task<Request> GetForMethodAsync(string id, HttpMethods method)
         {
             var result = await this.GetAsync(id);
 

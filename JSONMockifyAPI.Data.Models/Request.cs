@@ -6,12 +6,14 @@ namespace JSONMockifyAPI.Data.Models
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
-    public class JSONMock : BaseModel
+    public class Request : BaseModel
     {
         public string Name { get; set; }
 
         public string Template { get; set; }
-        
+
         public HttpMethods HttpMethod { get; set; }
+
+        public Resource Resource { get; set; }
     }
 }
