@@ -21,9 +21,9 @@ namespace Tests.Web.APIClientTest.Controllers
         public void CanGetAllMocks()
         {
             // Arrange
-            var requestRepo = new Mock<IRequestService>();
-            requestRepo.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestJSONMocks());
-            var controller = new RequestsController(requestRepo.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+            var controller = new RequestsController(requestService.Object);
 
             // Act
             var result = controller.Get();
@@ -39,9 +39,9 @@ namespace Tests.Web.APIClientTest.Controllers
         public void CanGetNoMocks()
         {
             // Arrange
-            var requestRepo = new Mock<IRequestService>();
-            requestRepo.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(Task.FromResult((new List<Request>().AsEnumerable(), (long)0)));
-            var controller = new RequestsController(requestRepo.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(Task.FromResult((new List<Request>().AsEnumerable(), (long)0)));
+            var controller = new RequestsController(requestService.Object);
 
             // Act
             var result = controller.Get();
@@ -60,15 +60,15 @@ namespace Tests.Web.APIClientTest.Controllers
             string testId = "id1";
             DateTimeOffset testCreated = new DateTime(2017, 12, 2);
             string testTemplate = "Test Template";
-            var requestRepo = new Mock<IRequestService>();
-            requestRepo.Setup(repo => repo.GetAsync(testId)).Returns(Task.FromResult(new Request
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAsync(testId)).Returns(Task.FromResult(new Request
             {
                 ID = testId,
                 CreatedTimestamp = testCreated,
                 Template = testTemplate
             }));
 
-            var controller = new RequestsController(requestRepo.Object);
+            var controller = new RequestsController(requestService.Object);
 
             // Act
             var result = controller.Get(testId);
@@ -87,10 +87,10 @@ namespace Tests.Web.APIClientTest.Controllers
         {
             // Arrange
             string testId = "id1";
-            var requestRepo = new Mock<IRequestService>();
-            requestRepo.Setup(repo => repo.GetAsync(testId)).Returns(Task.FromResult((Request)null));
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAsync(testId)).Returns(Task.FromResult((Request)null));
 
-            var controller = new RequestsController(requestRepo.Object);
+            var controller = new RequestsController(requestService.Object);
 
             // Act
             var result = controller.Get(testId);
@@ -100,35 +100,35 @@ namespace Tests.Web.APIClientTest.Controllers
         }
 
         [Fact]
-        public void CanCreateJSONMock()
+        public void CanCreateRequest()
         {
             // Arrange
-            Request testJSONMock = new Request
+            Request testRequest = new Request
             {
                 Template = "Test Template"
             };
-            var requestRepo = new Mock<IRequestService>();
-            requestRepo.Setup(repo => repo.AddOrUpdateAsync(testJSONMock)).Returns(Task.FromResult(testJSONMock));
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.AddOrUpdateAsync(testRequest)).Returns(Task.FromResult(testRequest));
 
-            var controller = new RequestsController(requestRepo.Object);
+            var controller = new RequestsController(requestService.Object);
 
             // Act
-            var result = controller.Post(testJSONMock);
+            var result = controller.Post(testRequest);
 
             // Assert
             var viewResult = Assert.IsType<CreatedAtRouteResult>(result);
             var model = Assert.IsAssignableFrom<Request>(
                 viewResult.Value);
-            Assert.Equal(testJSONMock.Template, model.Template);
+            Assert.Equal(testRequest.Template, model.Template);
         }
 
         [Fact]
-        public void CannotCreateJSONMockWhenEmptyRequest()
+        public void CannotCreateRequestWhenEmptyRequest()
         {
             // Arrange
-            var requestRepo = new Mock<IRequestService>();
+            var requestService = new Mock<IRequestService>();
 
-            var controller = new RequestsController(requestRepo.Object);
+            var controller = new RequestsController(requestService.Object);
 
             // Act
             var result = controller.Post(null);
@@ -138,34 +138,34 @@ namespace Tests.Web.APIClientTest.Controllers
         }
 
         [Fact]
-        public void CanPutJSONMock()
+        public void CanPutRequest()
         {
             // Arrange
-            Request testJSONMock = new Request
+            Request testRequest = new Request
             {
                 Template = "Test Template"
             };
             string testID = "id1";
-            var requestRepo = new Mock<IRequestService>();
-            requestRepo.Setup(repo => repo.AddOrUpdateAsync(testJSONMock)).Returns(Task.FromResult(testJSONMock));
-            requestRepo.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.AddOrUpdateAsync(testRequest)).Returns(Task.FromResult(testRequest));
+            requestService.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
 
-            var controller = new RequestsController(requestRepo.Object);
+            var controller = new RequestsController(requestService.Object);
 
             // Act
-            var result = controller.Put(testID, testJSONMock);
+            var result = controller.Put(testID, testRequest);
 
             // Assert
             var viewResult = Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
-        public void CannotPutJSONMockWhenEmptyRequest()
+        public void CannotPutRequestWhenEmptyRequest()
         {
             // Arrange
-            var requestRepo = new Mock<IRequestService>();
+            var requestService = new Mock<IRequestService>();
 
-            var controller = new RequestsController(requestRepo.Object);
+            var controller = new RequestsController(requestService.Object);
 
             // Act
             var result = controller.Put("id1", null);
@@ -175,19 +175,19 @@ namespace Tests.Web.APIClientTest.Controllers
         }
 
         [Fact]
-        public void CanPatchJSONMock()
+        public void CanPatchRequest()
         {
             // Arrange
-            Request testJSONMock = new Request
+            Request testRequest = new Request
             {
                 Template = "Test Template"
             };
             string testID = "id1";
-            var requestRepo = new Mock<IRequestService>();
-            requestRepo.Setup(repo => repo.AddOrUpdateAsync(testJSONMock)).Returns(Task.FromResult(testJSONMock));
-            requestRepo.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.AddOrUpdateAsync(testRequest)).Returns(Task.FromResult(testRequest));
+            requestService.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
 
-            var controller = new RequestsController(requestRepo.Object);
+            var controller = new RequestsController(requestService.Object);
 
             // Act
             var result = controller.Patch(testID, new JsonPatchDocument<Request>());
@@ -197,12 +197,12 @@ namespace Tests.Web.APIClientTest.Controllers
         }
 
         [Fact]
-        public void CannotPatchJSONMockWhenEmptyRequest()
+        public void CannotPatchRequestWhenEmptyRequest()
         {
             // Arrange
-            var requestRepo = new Mock<IRequestService>();
+            var requestService = new Mock<IRequestService>();
 
-            var controller = new RequestsController(requestRepo.Object);
+            var controller = new RequestsController(requestService.Object);
 
             // Act
             var result = controller.Patch("id1", null);
@@ -212,18 +212,18 @@ namespace Tests.Web.APIClientTest.Controllers
         }
 
         [Fact]
-        public void CanDeleteJSONMock()
+        public void CanDeleteRequest()
         {
             // Arrange
-            Request testJSONMock = new Request
+            Request testRequest = new Request
             {
                 Template = "Test Template"
             };
             string testID = "id1";
-            var requestRepo = new Mock<IRequestService>();
-            requestRepo.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
 
-            var controller = new RequestsController(requestRepo.Object);
+            var controller = new RequestsController(requestService.Object);
 
             // Act
             var result = controller.Delete("id1");
@@ -233,12 +233,12 @@ namespace Tests.Web.APIClientTest.Controllers
         }
 
         [Fact]
-        public void CannotDeleteJSONMockWhenIDNotExists()
+        public void CannotDeleteRequestWhenIDNotExists()
         {
             // Arrange
-            var requestRepo = new Mock<IRequestService>();
+            var requestService = new Mock<IRequestService>();
 
-            var controller = new RequestsController(requestRepo.Object);
+            var controller = new RequestsController(requestService.Object);
 
             // Act
             var result = controller.Delete("id1");
@@ -247,7 +247,7 @@ namespace Tests.Web.APIClientTest.Controllers
             var viewResult = Assert.IsType<NotFoundResult>(result);
         }
 
-        private Task<(IEnumerable<Request>, long)> GetTestJSONMocks()
+        private Task<(IEnumerable<Request>, long)> GetTestRequests()
         {
             var mocks = new List<Request>();
             mocks.Add(new Request()

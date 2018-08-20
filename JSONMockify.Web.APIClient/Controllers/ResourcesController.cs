@@ -12,11 +12,11 @@ namespace JSONMockify.Web.APIClient.Controllers
 
     [Route("api/resources")]
     [EnableCors("UI")]
-    public class ResourceController : Controller
+    public class ResourcesController : Controller
     {
         private readonly IResourceService resourceService;
 
-        public ResourceController(IResourceService resourceService)
+        public ResourcesController(IResourceService resourceService)
         {
             this.resourceService = resourceService;
         }

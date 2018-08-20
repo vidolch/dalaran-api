@@ -12,11 +12,11 @@ namespace JSONMockify.Web.APIClient.Controllers
 
     [Route("api/collections")]
     [EnableCors("UI")]
-    public class CollectionController : Controller
+    public class CollectionsController : Controller
     {
         private readonly ICollectionService colletionService;
 
-        public CollectionController(ICollectionService collectionService)
+        public CollectionsController(ICollectionService collectionService)
         {
             this.colletionService = collectionService;
         }
