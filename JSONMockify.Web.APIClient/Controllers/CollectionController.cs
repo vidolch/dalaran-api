@@ -3,12 +3,12 @@
 
 namespace JSONMockify.Web.APIClient.Controllers
 {
+    using System.Collections.Generic;
     using JSONMockifyAPI.Data.Models;
     using JSONMockifyAPI.Services.Data.Contracts;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
-    using System.Collections.Generic;
 
     [Route("api/collections")]
     [EnableCors("UI")]

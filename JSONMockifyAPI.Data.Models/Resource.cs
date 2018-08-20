@@ -5,7 +5,7 @@ namespace JSONMockifyAPI.Data.Models
 {
     using System.Collections.Generic;
 
-    public class Resource
+    public class Resource : BaseModel
     {
         public string Name { get; set; }
 

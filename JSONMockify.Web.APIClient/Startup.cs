@@ -46,13 +46,17 @@ namespace JSONMockify.Web.APIClient
 
             services.AddSingleton<IDBRepository<Request>>(
                 new MongoRepository<Request>(mongoUrl, nameof(Request)));
+            services.AddSingleton<IDBRepository<Resource>>(
+                new MongoRepository<Resource>(mongoUrl, nameof(Resource)));
             services.AddSingleton<IDBRepository<Collection>>(
                 new MongoRepository<Collection>(mongoUrl, nameof(Collection)));
 
             services.AddTransient<IRequestRepository, RequestRepository>();
+            services.AddTransient<IResourceRepository, ResourceRepository>();
             services.AddTransient<ICollectionRepository, CollectionRepository>();
 
             services.AddTransient<IRequestService, RequestService>();
+            services.AddTransient<IResourceService, ResourceService>();
             services.AddTransient<ICollectionService, CollectionService>();
 
             services.AddIdentityWithMongoStores(mongoConnectionString)
