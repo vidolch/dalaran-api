@@ -72,7 +72,8 @@ namespace JSONMockify.Web.APIClient
                     serializerSettings.ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() };
                     serializerSettings.Converters.Add(new StringEnumConverter());
                     serializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                });
+                })
+                .AddDataAnnotations();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

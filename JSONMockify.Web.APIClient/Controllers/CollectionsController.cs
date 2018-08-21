@@ -3,7 +3,9 @@
 
 namespace JSONMockify.Web.APIClient.Controllers
 {
-    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using JSONMockify.Web.APIClient.Dtos.Collection;
     using JSONMockifyAPI.Data.Models;
     using JSONMockifyAPI.Services.Data.Contracts;
     using Microsoft.AspNetCore.Cors;
@@ -22,83 +24,110 @@ namespace JSONMockify.Web.APIClient.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> GetAsync()
         {
-            IEnumerable<Collection> collections = this.colletionService.GetAllAsync().GetAwaiter().GetResult().Item1;
-            return this.Ok(collections);
+            var(collections, count) = await this.colletionService.GetAllAsync();
+
+            return this.Ok(new CollectionListDto(1, count, collections.Select(c => new CollectionDto(c))));
         }
 
         [HttpGet("{id}", Name = "GetCollection")]
-        public IActionResult Get(string id)
+        public async Task<IActionResult> GetAsync(string id)
         {
-            var result = this.colletionService.GetAsync(id).GetAwaiter().GetResult();
+            var result = await this.colletionService.GetAsync(id);
             if (result == null)
             {
                 return this.NotFound();
             }
 
-            return this.Ok(result);
+            return this.Ok(new CollectionDto(result));
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Collection newCollection)
+        public async Task<IActionResult> PostAsync([FromBody] CollectionUpdateDto newCollection)
         {
             if (newCollection == null)
             {
                 return this.BadRequest();
             }
 
-            this.colletionService.AddOrUpdateAsync(newCollection);
-            return this.CreatedAtRoute("GetCollection", new { id = newCollection.ID }, newCollection);
+            if (!this.ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(this.ModelState);
+            }
+
+            var collectionToSave = new Collection
+            {
+                Name = newCollection.Name
+            };
+
+            await this.colletionService.AddOrUpdateAsync(collectionToSave);
+
+            return this.CreatedAtRoute("GetCollection", new { id = collectionToSave.ID }, new CollectionDto(collectionToSave));
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(string id, [FromBody] Collection updatedCollection)
+        public async Task<IActionResult> PutAsync(string id, [FromBody] CollectionUpdateDto updatedCollection)
         {
             if (updatedCollection == null)
             {
                 return this.BadRequest();
             }
 
-            if (!this.colletionService.RecordExistsAsync(id).GetAwaiter().GetResult())
+            if (!this.ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(this.ModelState);
+            }
+
+            if (!await this.colletionService.RecordExistsAsync(id))
             {
                 return this.NotFound();
             }
 
-            updatedCollection.ID = id;
-            this.colletionService.AddOrUpdateAsync(updatedCollection);
+            var collectionToSave = new Collection
+            {
+                ID = id,
+                Name = updatedCollection.Name
+            };
+
+            await this.colletionService.AddOrUpdateAsync(collectionToSave);
             return this.NoContent();
         }
 
         [HttpPatch("{id}")]
-        public IActionResult Patch(string id, [FromBody] JsonPatchDocument<Collection> updatedCollection)
+        public async Task<IActionResult> PatchAsync(string id, [FromBody] JsonPatchDocument<CollectionUpdateDto> updatedCollection)
         {
             if (updatedCollection == null)
             {
                 return this.BadRequest();
             }
 
-            if (!this.colletionService.RecordExistsAsync(id).GetAwaiter().GetResult())
+            if (!await this.colletionService.RecordExistsAsync(id))
             {
                 return this.NotFound();
             }
 
-            Collection model = new Collection();
+            CollectionUpdateDto model = new CollectionUpdateDto();
             updatedCollection.ApplyTo(model);
-            model.ID = id;
-            this.colletionService.AddOrUpdateAsync(model);
+
+            var collectionToSave = new Collection
+            {
+                ID = id,
+                Name = model.Name
+            };
+            await this.colletionService.AddOrUpdateAsync(collectionToSave);
             return this.NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> DeleteAsync(string id)
         {
-            if (!this.colletionService.RecordExistsAsync(id).GetAwaiter().GetResult())
+            if (!await this.colletionService.RecordExistsAsync(id))
             {
                 return this.NotFound();
             }
 
-            this.colletionService.DeleteAsync(id);
+            await this.colletionService.DeleteAsync(id);
             return this.NoContent();
         }
     }

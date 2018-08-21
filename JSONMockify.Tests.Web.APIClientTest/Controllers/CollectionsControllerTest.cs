@@ -8,6 +8,7 @@ namespace Tests.Web.APIClientTest.Controllers
     using System.Linq;
     using System.Threading.Tasks;
     using JSONMockify.Web.APIClient.Controllers;
+    using JSONMockify.Web.APIClient.Dtos.Collection;
     using JSONMockifyAPI.Data.Models;
     using JSONMockifyAPI.Services.Data.Contracts;
     using Microsoft.AspNetCore.JsonPatch;
@@ -18,7 +19,7 @@ namespace Tests.Web.APIClientTest.Controllers
     public class CollectionsControllerTest
     {
         [Fact]
-        public void CanGetAllCollections()
+        public async Task CanGetAllCollectionsAsync()
         {
             // Arrange
             var collectionService = new Mock<ICollectionService>();
@@ -26,17 +27,17 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Get();
+            var result = await controller.GetAsync();
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result);
-            var model = Assert.IsAssignableFrom<IEnumerable<Collection>>(
+            var model = Assert.IsAssignableFrom<CollectionListDto>(
                 viewResult.Value);
             Assert.Equal(2, model.Count());
         }
 
         [Fact]
-        public void CanGetNoMocks()
+        public async Task CanGetNoMocksAsync()
         {
             // Arrange
             var collectionService = new Mock<ICollectionService>();
@@ -44,17 +45,17 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Get();
+            var result = await controller.GetAsync();
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result);
-            var model = Assert.IsAssignableFrom<IEnumerable<Collection>>(
+            var model = Assert.IsAssignableFrom<CollectionListDto>(
                 viewResult.Value);
             Assert.Empty(model);
         }
 
         [Fact]
-        public void CanGetMockById()
+        public async Task CanGetMockByIdAsync()
         {
             // Arrange
             string testId = "id1";
@@ -71,11 +72,11 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Get(testId);
+            var result = await controller.GetAsync(testId);
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result);
-            var model = Assert.IsAssignableFrom<Collection>(
+            var model = Assert.IsAssignableFrom<CollectionDto>(
                 viewResult.Value);
             Assert.Equal(testId, model.ID);
             Assert.Equal(testTemplate, model.Name);
@@ -83,7 +84,7 @@ namespace Tests.Web.APIClientTest.Controllers
         }
 
         [Fact]
-        public void CanGetNoMockById()
+        public async Task CanGetNoMockByIdAsync()
         {
             // Arrange
             string testId = "id1";
@@ -93,37 +94,43 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Get(testId);
+            var result = await controller.GetAsync(testId);
 
             // Assert
             var viewResult = Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void CanCreateCollection()
+        public async Task CanCreateCollectionAsync()
         {
             // Arrange
             Collection testCollection = new Collection
             {
                 Name = "Test Template"
             };
+
+            CollectionUpdateDto testCollectionDto = new CollectionUpdateDto
+            {
+                Name = "Test Template"
+            };
+
             var collectionService = new Mock<ICollectionService>();
             collectionService.Setup(repo => repo.AddOrUpdateAsync(testCollection)).Returns(Task.FromResult(testCollection));
 
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Post(testCollection);
+            var result = await controller.PostAsync(testCollectionDto);
 
             // Assert
             var viewResult = Assert.IsType<CreatedAtRouteResult>(result);
-            var model = Assert.IsAssignableFrom<Collection>(
+            var model = Assert.IsAssignableFrom<CollectionDto>(
                 viewResult.Value);
             Assert.Equal(testCollection.Name, model.Name);
         }
 
         [Fact]
-        public void CannotCreateCollectionWhenEmptyRequest()
+        public async Task CannotCreateCollectionWhenEmptyRequestAsync()
         {
             // Arrange
             var collectionService = new Mock<ICollectionService>();
@@ -131,20 +138,26 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Post(null);
+            var result = await controller.PostAsync(null);
 
             // Assert
             var viewResult = Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
-        public void CanPutCollection()
+        public async Task CanPutCollectionAsync()
         {
             // Arrange
             Collection testCollection = new Collection
             {
                 Name = "Test Template"
             };
+
+            CollectionUpdateDto testCollectionDto = new CollectionUpdateDto
+            {
+                Name = "Test Template"
+            };
+
             string testID = "id1";
             var collectionService = new Mock<ICollectionService>();
             collectionService.Setup(repo => repo.AddOrUpdateAsync(testCollection)).Returns(Task.FromResult(testCollection));
@@ -153,14 +166,14 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Put(testID, testCollection);
+            var result = await controller.PutAsync(testID, testCollectionDto);
 
             // Assert
             var viewResult = Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
-        public void CannotPutCollectionWhenEmptyRequest()
+        public async Task CannotPutCollectionWhenEmptyRequestAsync()
         {
             // Arrange
             var collectionService = new Mock<ICollectionService>();
@@ -168,20 +181,21 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Put("id1", null);
+            var result = await controller.PutAsync("id1", null);
 
             // Assert
             var viewResult = Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
-        public void CanPatchCollection()
+        public async Task CanPatchCollectionAsync()
         {
             // Arrange
             Collection testCollection = new Collection
             {
                 Name = "Test Template"
             };
+
             string testID = "id1";
             var collectionService = new Mock<ICollectionService>();
             collectionService.Setup(repo => repo.AddOrUpdateAsync(testCollection)).Returns(Task.FromResult(testCollection));
@@ -190,14 +204,14 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Patch(testID, new JsonPatchDocument<Collection>());
+            var result = await controller.PatchAsync(testID, new JsonPatchDocument<CollectionUpdateDto>());
 
             // Assert
             var viewResult = Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
-        public void CannotPatchCollectionWhenEmptyRequest()
+        public async Task CannotPatchCollectionWhenEmptyRequestAsync()
         {
             // Arrange
             var collectionService = new Mock<ICollectionService>();
@@ -205,14 +219,14 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Patch("id1", null);
+            var result = await controller.PatchAsync("id1", null);
 
             // Assert
             var viewResult = Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
-        public void CanDeleteCollection()
+        public async Task CanDeleteCollectionAsync()
         {
             // Arrange
             Collection testCollection = new Collection
@@ -226,14 +240,14 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Delete("id1");
+            var result = await controller.DeleteAsync("id1");
 
             // Assert
             var viewResult = Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
-        public void CannotDeleteCollectionWhenIDNotExists()
+        public async Task CannotDeleteCollectionWhenIDNotExistsAsync()
         {
             // Arrange
             var collectionService = new Mock<ICollectionService>();
@@ -241,7 +255,7 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new CollectionsController(collectionService.Object);
 
             // Act
-            var result = controller.Delete("id1");
+            var result = await controller.DeleteAsync("id1");
 
             // Assert
             var viewResult = Assert.IsType<NotFoundResult>(result);
