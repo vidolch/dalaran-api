@@ -3,9 +3,6 @@
 
 namespace Dalaran.Data.Models
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
     public class Request : BaseModel
     {
         public string Name { get; set; }

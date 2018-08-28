@@ -3,7 +3,9 @@
 
 namespace Dalaran.Web.APIClient.Controllers
 {
-    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Dalaran.Web.APIClient.Dtos.Resource;
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
     using Microsoft.AspNetCore.Cors;
@@ -22,83 +24,103 @@ namespace Dalaran.Web.APIClient.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> GetAsync()
         {
-            IEnumerable<Resource> resources = this.resourceService.GetAllAsync().GetAwaiter().GetResult().Item1;
-            return this.Ok(resources);
+            var (resources, count) = await this.resourceService.GetAllAsync();
+            return this.Ok(new ResourceListDto(1, count, resources.Select(r => new ResourceDto(r))));
         }
 
         [HttpGet("{id}", Name = "GetResource")]
-        public IActionResult Get(string id)
+        public async Task<IActionResult> GetAsync(string id)
         {
-            var result = this.resourceService.GetAsync(id).GetAwaiter().GetResult();
+            var result = await this.resourceService.GetAsync(id);
             if (result == null)
             {
                 return this.NotFound();
             }
 
-            return this.Ok(result);
+            return this.Ok(new ResourceDto(result));
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Resource newResource)
+        public async Task<IActionResult> PostAsync([FromBody] ResourceUpdateDto newResource)
         {
             if (newResource == null)
             {
                 return this.BadRequest();
             }
 
-            this.resourceService.AddOrUpdateAsync(newResource);
-            return this.CreatedAtRoute("GetResource", new { id = newResource.ID }, newResource);
+            var resourceToSave = new Resource
+            {
+                Name = newResource.Name,
+                Path = newResource.Path
+            };
+
+            await this.resourceService.AddOrUpdateAsync(resourceToSave);
+            return this.CreatedAtRoute("GetResource", new { id = resourceToSave.ID }, new ResourceDto(resourceToSave));
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(string id, [FromBody] Resource updatedResource)
+        public async Task<IActionResult> PutAsync(string id, [FromBody] ResourceUpdateDto updatedResource)
         {
             if (updatedResource == null)
             {
                 return this.BadRequest();
             }
 
-            if (!this.resourceService.RecordExistsAsync(id).GetAwaiter().GetResult())
+            if (!await this.resourceService.RecordExistsAsync(id))
             {
                 return this.NotFound();
             }
 
+            var resourceToSave = new Resource
+            {
+                ID = id,
+                Name = updatedResource.Name,
+                Path = updatedResource.Path
+            };
+
             updatedResource.ID = id;
-            this.resourceService.AddOrUpdateAsync(updatedResource);
+            await this.resourceService.AddOrUpdateAsync(resourceToSave);
             return this.NoContent();
         }
 
         [HttpPatch("{id}")]
-        public IActionResult Patch(string id, [FromBody] JsonPatchDocument<Resource> updatedResource)
+        public async Task<IActionResult> PatchAsync(string id, [FromBody] JsonPatchDocument<ResourceUpdateDto> updatedResource)
         {
             if (updatedResource == null)
             {
                 return this.BadRequest();
             }
 
-            if (!this.resourceService.RecordExistsAsync(id).GetAwaiter().GetResult())
+            if (!await this.resourceService.RecordExistsAsync(id))
             {
                 return this.NotFound();
             }
 
-            Resource model = new Resource();
+            ResourceUpdateDto model = new ResourceUpdateDto();
             updatedResource.ApplyTo(model);
             model.ID = id;
-            this.resourceService.AddOrUpdateAsync(model);
+
+            Resource resourceToSave = new Resource
+            {
+                ID = id,
+                Path = model.Path,
+                Name = model.Name
+            };
+            await this.resourceService.AddOrUpdateAsync(resourceToSave);
             return this.NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> DeleteAsync(string id)
         {
-            if (!this.resourceService.RecordExistsAsync(id).GetAwaiter().GetResult())
+            if (!await this.resourceService.RecordExistsAsync(id))
             {
                 return this.NotFound();
             }
 
-            this.resourceService.DeleteAsync(id);
+            await this.resourceService.DeleteAsync(id);
             return this.NoContent();
         }
     }

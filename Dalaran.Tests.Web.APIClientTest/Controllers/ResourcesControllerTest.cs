@@ -8,6 +8,7 @@ namespace Tests.Web.APIClientTest.Controllers
     using System.Linq;
     using System.Threading.Tasks;
     using Dalaran.Web.APIClient.Controllers;
+    using Dalaran.Web.APIClient.Dtos.Resource;
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
     using Microsoft.AspNetCore.JsonPatch;
@@ -18,7 +19,7 @@ namespace Tests.Web.APIClientTest.Controllers
     public class ResourcesControllerTest
     {
         [Fact]
-        public void CanGetAllResources()
+        public async Task CanGetAllResourcesAsync()
         {
             // Arrange
             var resourceService = new Mock<IResourceService>();
@@ -26,17 +27,17 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new ResourcesController(resourceService.Object);
 
             // Act
-            var result = controller.Get();
+            var result = await controller.GetAsync();
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result);
-            var model = Assert.IsAssignableFrom<IEnumerable<Resource>>(
+            var model = Assert.IsAssignableFrom<ResourceListDto>(
                 viewResult.Value);
             Assert.Equal(2, model.Count());
         }
 
         [Fact]
-        public void CanGetNoMocks()
+        public async Task CanGetNoMocksAsync()
         {
             // Arrange
             var resourceService = new Mock<IResourceService>();
@@ -44,17 +45,17 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new ResourcesController(resourceService.Object);
 
             // Act
-            var result = controller.Get();
+            var result = await controller.GetAsync();
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result);
-            var model = Assert.IsAssignableFrom<IEnumerable<Resource>>(
+            var model = Assert.IsAssignableFrom<ResourceListDto>(
                 viewResult.Value);
             Assert.Empty(model);
         }
 
         [Fact]
-        public void CanGetMockById()
+        public async Task CanGetMockByIdAsync()
         {
             // Arrange
             string testId = "id1";
@@ -71,11 +72,11 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new ResourcesController(resourceService.Object);
 
             // Act
-            var result = controller.Get(testId);
+            var result = await controller.GetAsync(testId);
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result);
-            var model = Assert.IsAssignableFrom<Resource>(
+            var model = Assert.IsAssignableFrom<ResourceDto>(
                 viewResult.Value);
             Assert.Equal(testId, model.ID);
             Assert.Equal(testTemplate, model.Name);
@@ -83,7 +84,7 @@ namespace Tests.Web.APIClientTest.Controllers
         }
 
         [Fact]
-        public void CanGetNoMockById()
+        public async Task CanGetNoMockByIdAsync()
         {
             // Arrange
             string testId = "id1";
@@ -93,17 +94,21 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new ResourcesController(resourceService.Object);
 
             // Act
-            var result = controller.Get(testId);
+            var result = await controller.GetAsync(testId);
 
             // Assert
             var viewResult = Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void CanCreateResource()
+        public async Task CanCreateResourceAsync()
         {
             // Arrange
             Resource testResource = new Resource
+            {
+                Name = "Test Template"
+            };
+            ResourceUpdateDto testResourceDto = new ResourceUpdateDto
             {
                 Name = "Test Template"
             };
@@ -113,17 +118,17 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new ResourcesController(resourceService.Object);
 
             // Act
-            var result = controller.Post(testResource);
+            var result = await controller.PostAsync(testResourceDto);
 
             // Assert
             var viewResult = Assert.IsType<CreatedAtRouteResult>(result);
-            var model = Assert.IsAssignableFrom<Resource>(
+            var model = Assert.IsAssignableFrom<ResourceDto>(
                 viewResult.Value);
             Assert.Equal(testResource.Name, model.Name);
         }
 
         [Fact]
-        public void CannotCreateResourceWhenEmptyResource()
+        public async Task CannotCreateResourceWhenEmptyResourceAsync()
         {
             // Arrange
             var resourceService = new Mock<IResourceService>();
@@ -131,14 +136,55 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new ResourcesController(resourceService.Object);
 
             // Act
-            var result = controller.Post(null);
+            var result = await controller.PostAsync(null);
 
             // Assert
             var viewResult = Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
-        public void CanPutResource()
+        public async Task CanPutResourceAsync()
+        {
+            // Arrange
+            ResourceUpdateDto testResourceDto = new ResourceUpdateDto
+            {
+                Name = "Test Template"
+            };
+            Resource testResource = new Resource
+            {
+                Name = "Test Template"
+            };
+            string testID = "id1";
+            var resourceService = new Mock<IResourceService>();
+            resourceService.Setup(repo => repo.AddOrUpdateAsync(testResource)).Returns(Task.FromResult(testResource));
+            resourceService.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
+
+            var controller = new ResourcesController(resourceService.Object);
+
+            // Act
+            var result = await controller.PutAsync(testID, testResourceDto);
+
+            // Assert
+            var viewResult = Assert.IsType<NoContentResult>(result);
+        }
+
+        [Fact]
+        public async Task CannotPutResourceWhenEmptyRequestAsync()
+        {
+            // Arrange
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new ResourcesController(resourceService.Object);
+
+            // Act
+            var result = await controller.PutAsync("id1", null);
+
+            // Assert
+            var viewResult = Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task CanPatchResourceAsync()
         {
             // Arrange
             Resource testResource = new Resource
@@ -153,14 +199,14 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new ResourcesController(resourceService.Object);
 
             // Act
-            var result = controller.Put(testID, testResource);
+            var result = await controller.PatchAsync(testID, new JsonPatchDocument<ResourceUpdateDto>());
 
             // Assert
             var viewResult = Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
-        public void CannotPutResourceWhenEmptyRequest()
+        public async Task CannotPatchResourceWhenEmptyRequestAsync()
         {
             // Arrange
             var resourceService = new Mock<IResourceService>();
@@ -168,51 +214,14 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new ResourcesController(resourceService.Object);
 
             // Act
-            var result = controller.Put("id1", null);
+            var result = await controller.PatchAsync("id1", null);
 
             // Assert
             var viewResult = Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
-        public void CanPatchResource()
-        {
-            // Arrange
-            Resource testResource = new Resource
-            {
-                Name = "Test Template"
-            };
-            string testID = "id1";
-            var resourceService = new Mock<IResourceService>();
-            resourceService.Setup(repo => repo.AddOrUpdateAsync(testResource)).Returns(Task.FromResult(testResource));
-            resourceService.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
-
-            var controller = new ResourcesController(resourceService.Object);
-
-            // Act
-            var result = controller.Patch(testID, new JsonPatchDocument<Resource>());
-
-            // Assert
-            var viewResult = Assert.IsType<NoContentResult>(result);
-        }
-
-        [Fact]
-        public void CannotPatchResourceWhenEmptyRequest()
-        {
-            // Arrange
-            var resourceService = new Mock<IResourceService>();
-
-            var controller = new ResourcesController(resourceService.Object);
-
-            // Act
-            var result = controller.Patch("id1", null);
-
-            // Assert
-            var viewResult = Assert.IsType<BadRequestResult>(result);
-        }
-
-        [Fact]
-        public void CanDeleteResource()
+        public async Task CanDeleteResourceAsync()
         {
             // Arrange
             Resource testResource = new Resource
@@ -226,14 +235,14 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new ResourcesController(resourceService.Object);
 
             // Act
-            var result = controller.Delete("id1");
+            var result = await controller.DeleteAsync("id1");
 
             // Assert
             var viewResult = Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
-        public void CannotDeleteResourceWhenIDNotExists()
+        public async Task CannotDeleteResourceWhenIDNotExistsAsync()
         {
             // Arrange
             var resourceService = new Mock<IResourceService>();
@@ -241,7 +250,7 @@ namespace Tests.Web.APIClientTest.Controllers
             var controller = new ResourcesController(resourceService.Object);
 
             // Act
-            var result = controller.Delete("id1");
+            var result = await controller.DeleteAsync("id1");
 
             // Assert
             var viewResult = Assert.IsType<NotFoundResult>(result);
