@@ -7,10 +7,10 @@ namespace Tests.Web.APIClientTest.Controllers
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using JSONMockify.Web.APIClient.Controllers;
-    using JSONMockify.Web.APIClient.Dtos.Resource;
-    using JSONMockifyAPI.Data.Models;
-    using JSONMockifyAPI.Services.Data.Contracts;
+    using Dalaran.Web.APIClient.Controllers;
+    using Dalaran.Web.APIClient.Dtos.Resource;
+    using Dalaran.Data.Models;
+    using Dalaran.Services.Data.Contracts;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
