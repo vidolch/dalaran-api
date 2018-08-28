@@ -5,9 +5,9 @@ namespace Dalaran.Web.APIClient.Controllers
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using Dalaran.Web.APIClient.Dtos.Resource;
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
+    using Dalaran.Web.APIClient.Dtos.Resource;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
@@ -26,7 +26,7 @@ namespace Dalaran.Web.APIClient.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var (resources, count) = await this.resourceService.GetAllAsync();
+            var(resources, count) = await this.resourceService.GetAllAsync();
             return this.Ok(new ResourceListDto(1, count, resources.Select(r => new ResourceDto(r))));
         }
 

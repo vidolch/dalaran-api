@@ -5,9 +5,9 @@ namespace Dalaran.Web.APIClient.Controllers
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using Dalaran.Web.APIClient.Dtos.Collection;
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
+    using Dalaran.Web.APIClient.Dtos.Collection;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
