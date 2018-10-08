@@ -3,9 +3,11 @@
 
 namespace Dalaran.Web.APIClient.Controllers
 {
-    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
+    using Dalaran.Web.APIClient.Dtos.Request;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
@@ -22,16 +24,17 @@ namespace Dalaran.Web.APIClient.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            IEnumerable<Request> requests = this.requestService.GetAllAsync().GetAwaiter().GetResult().Item1;
-            return this.Ok(requests);
+            var(requests, count) = await this.requestService.GetAllAsync();
+
+            return this.Ok(new RequestListDto(1, count, requests.Select(c => new RequestDto(c))));
         }
 
         [HttpGet("{id}", Name = "GetRequest")]
-        public IActionResult Get(string id)
+        public async Task<IActionResult> Get(string id)
         {
-            var result = this.requestService.GetAsync(id).GetAwaiter().GetResult();
+            var result = await this.requestService.GetAsync(id);
             if (result == null)
             {
                 return this.NotFound();
@@ -41,64 +44,84 @@ namespace Dalaran.Web.APIClient.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Request newRequest)
+        public async Task<IActionResult> Post([FromBody] RequestUpdateDto newRequest)
         {
             if (newRequest == null)
             {
                 return this.BadRequest();
             }
 
-            this.requestService.AddOrUpdateAsync(newRequest);
-            return this.CreatedAtRoute("GetRequest", new { id = newRequest.ID }, newRequest);
+            Request requestToSave = new Request
+            {
+                Name = newRequest.Name,
+                Template = newRequest.Template,
+                HttpMethod = newRequest.HttpMethod
+            };
+            await this.requestService.AddOrUpdateAsync(requestToSave);
+            return this.CreatedAtRoute("GetRequest", new { id = requestToSave.ID }, new RequestDto(requestToSave));
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(string id, [FromBody] Request updatedRequest)
+        public async Task<IActionResult> Put(string id, [FromBody] RequestUpdateDto updatedRequest)
         {
             if (updatedRequest == null)
             {
                 return this.BadRequest();
             }
 
-            if (!this.requestService.RecordExistsAsync(id).GetAwaiter().GetResult())
+            if (!await this.requestService.RecordExistsAsync(id))
             {
                 return this.NotFound();
             }
 
-            updatedRequest.ID = id;
-            this.requestService.AddOrUpdateAsync(updatedRequest);
+            var requestToSave = new Request
+            {
+                ID = id,
+                Name = updatedRequest.Name,
+                Template = updatedRequest.Template,
+                HttpMethod = updatedRequest.HttpMethod
+            };
+
+            await this.requestService.AddOrUpdateAsync(requestToSave);
             return this.NoContent();
         }
 
         [HttpPatch("{id}")]
-        public IActionResult Patch(string id, [FromBody] JsonPatchDocument<Request> updatedRequest)
+        public async Task<IActionResult> Patch(string id, [FromBody] JsonPatchDocument<RequestUpdateDto> updatedRequest)
         {
             if (updatedRequest == null)
             {
                 return this.BadRequest();
             }
 
-            if (!this.requestService.RecordExistsAsync(id).GetAwaiter().GetResult())
+            if (!await this.requestService.RecordExistsAsync(id))
             {
                 return this.NotFound();
             }
 
-            Request model = new Request();
+            RequestUpdateDto model = new RequestUpdateDto();
             updatedRequest.ApplyTo(model);
-            model.ID = id;
-            this.requestService.AddOrUpdateAsync(model);
+
+            var requestToSave = new Request
+            {
+                ID = id,
+                Name = model.Name,
+                Template = model.Template,
+                HttpMethod = model.HttpMethod
+            };
+            await this.requestService.AddOrUpdateAsync(requestToSave);
             return this.NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            if (!this.requestService.RecordExistsAsync(id).GetAwaiter().GetResult())
+            if (!await this.requestService.RecordExistsAsync(id))
             {
                 return this.NotFound();
             }
 
-            this.requestService.DeleteAsync(id);
+            await this.requestService.DeleteAsync(id);
             return this.NoContent();
         }
     }
