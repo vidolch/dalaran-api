@@ -11,7 +11,7 @@ namespace Dalaran.Data.Models
 
         public string Path { get; set; }
 
-        public Collection Collection { get; set; }
+        public string CollectionId { get; set; }
 
         public virtual ICollection<Resource> Resources { get; set; }
     }

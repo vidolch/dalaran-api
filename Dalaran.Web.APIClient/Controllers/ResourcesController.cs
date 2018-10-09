@@ -3,6 +3,7 @@
 
 namespace Dalaran.Web.APIClient.Controllers
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using Dalaran.Data.Models;
@@ -12,28 +13,33 @@ namespace Dalaran.Web.APIClient.Controllers
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/resources")]
+    [Route("api")]
     [EnableCors("UI")]
     public class ResourcesController : Controller
     {
         private readonly IResourceService resourceService;
+        private readonly ICollectionService collectionService;
 
-        public ResourcesController(IResourceService resourceService)
+        public ResourcesController(
+            IResourceService resourceService,
+            ICollectionService collectionService)
         {
             this.resourceService = resourceService;
+            this.collectionService = collectionService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        [HttpGet("collections/{collectionId}/resources")]
+        public async Task<IActionResult> GetAsync(string collectionId)
         {
-            var(resources, count) = await this.resourceService.GetAllAsync();
+            var(resources, count) = await this.resourceService.GetAllAsync(x => x.CollectionId == collectionId);
             return this.Ok(new ResourceListDto(1, count, resources.Select(r => new ResourceDto(r))));
         }
 
-        [HttpGet("{id}", Name = "GetResource")]
-        public async Task<IActionResult> GetAsync(string id)
+        [HttpGet("collections/{collectionId}/resources/{id}", Name = "GetResource")]
+        public async Task<IActionResult> GetAsync(string collectionId, string id)
         {
-            var result = await this.resourceService.GetAsync(id);
+            var result = (await this.resourceService.GetAllAsync(x => x.ID == id && x.CollectionId == collectionId)).Item1.FirstOrDefault();
+
             if (result == null)
             {
                 return this.NotFound();
@@ -42,33 +48,41 @@ namespace Dalaran.Web.APIClient.Controllers
             return this.Ok(new ResourceDto(result));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] ResourceUpdateDto newResource)
+        [HttpPost("collections/{collectionId}/resources")]
+        public async Task<IActionResult> PostAsync(string collectionId, [FromBody] ResourceUpdateDto newResource)
         {
             if (newResource == null)
             {
                 return this.BadRequest();
             }
 
+            var collection = await this.collectionService.GetAsync(collectionId);
+
+            if (collection == null)
+            {
+                return this.NotFound(new { message = $"Collection with id {collectionId} not found." });
+            }
+
             var resourceToSave = new Resource
             {
                 Name = newResource.Name,
-                Path = newResource.Path
+                Path = newResource.Path,
+                CollectionId = collectionId
             };
 
             await this.resourceService.AddOrUpdateAsync(resourceToSave);
-            return this.CreatedAtRoute("GetResource", new { id = resourceToSave.ID }, new ResourceDto(resourceToSave));
+            return this.CreatedAtRoute("GetResource", new { collectionId, id = resourceToSave.ID }, new ResourceDto(resourceToSave));
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsync(string id, [FromBody] ResourceUpdateDto updatedResource)
+        [HttpPut("collections/{collectionId}/resources/{id}")]
+        public async Task<IActionResult> PutAsync(string collectionId, string id, [FromBody] ResourceUpdateDto updatedResource)
         {
             if (updatedResource == null)
             {
                 return this.BadRequest();
             }
 
-            if (!await this.resourceService.RecordExistsAsync(id))
+            if (!await this.resourceService.RecordExistsAsync(x => x.ID == id && x.CollectionId == collectionId))
             {
                 return this.NotFound();
             }
@@ -85,15 +99,15 @@ namespace Dalaran.Web.APIClient.Controllers
             return this.NoContent();
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchAsync(string id, [FromBody] JsonPatchDocument<ResourceUpdateDto> updatedResource)
+        [HttpPatch("collections/{collectionId}/resources/{id}")]
+        public async Task<IActionResult> PatchAsync(string collectionId, string id, [FromBody] JsonPatchDocument<ResourceUpdateDto> updatedResource)
         {
             if (updatedResource == null)
             {
                 return this.BadRequest();
             }
 
-            if (!await this.resourceService.RecordExistsAsync(id))
+            if (!await this.resourceService.RecordExistsAsync(x => x.ID == id && x.CollectionId == collectionId))
             {
                 return this.NotFound();
             }
@@ -112,10 +126,10 @@ namespace Dalaran.Web.APIClient.Controllers
             return this.NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(string id)
+        [HttpDelete("collections/{collectionId}/resources/{id}")]
+        public async Task<IActionResult> DeleteAsync(string collectionId, string id)
         {
-            if (!await this.resourceService.RecordExistsAsync(id))
+            if (!await this.resourceService.RecordExistsAsync(x => x.ID == id && x.CollectionId == collectionId))
             {
                 return this.NotFound();
             }

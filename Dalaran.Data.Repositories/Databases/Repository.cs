@@ -48,5 +48,10 @@ namespace Dalaran.Data.Repositories.Databases
         {
             return this.dbRepository.RecordExistsAsync(identity);
         }
+
+        public Task<bool> RecordExistsAsync(Expression<Func<TEntity, bool>> predicate = null)
+        {
+            return this.dbRepository.RecordExistsAsync(predicate);
+        }
     }
 }

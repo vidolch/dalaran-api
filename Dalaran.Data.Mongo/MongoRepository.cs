@@ -81,6 +81,12 @@ namespace Dalaran.Data.Mongo
             return document.Any();
         }
 
+        public async Task<bool> RecordExistsAsync(Expression<Func<TEntity, bool>> predicate = null)
+        {
+            var filter = predicate == null ? _ => true : Filter.Convert(predicate);
+            return (await this.Collection.FindAsync(filter)).Any();
+        }
+
         private class Filter : ExpressionVisitor
         {
             private ReadOnlyCollection<ParameterExpression> parameters;

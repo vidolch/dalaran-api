@@ -21,5 +21,7 @@ namespace Dalaran.Services.Data.Contracts
         Task<bool> DeleteAsync(string identity);
 
         Task<bool> RecordExistsAsync(string identity);
+
+        Task<bool> RecordExistsAsync(Expression<Func<TEntity, bool>> predicate = default);
     }
 }
