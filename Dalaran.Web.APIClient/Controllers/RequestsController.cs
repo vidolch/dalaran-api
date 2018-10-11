@@ -16,62 +16,110 @@ namespace Dalaran.Web.APIClient.Controllers
     [EnableCors("UI")]
     public class RequestsController : Controller
     {
+        private readonly ICollectionService collectionService;
+        private readonly IResourceService resourceService;
         private readonly IRequestService requestService;
 
-        public RequestsController(IRequestService requestService)
+        public RequestsController(
+            ICollectionService collectionService,
+            IResourceService resourceService,
+            IRequestService requestService)
         {
+            this.collectionService = collectionService;
+            this.resourceService = resourceService;
             this.requestService = requestService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("collections/{collectionId}/resources/{resourceId}/requests")]
+        public async Task<IActionResult> Get(string collectionId, string resourceId)
         {
-            var(requests, count) = await this.requestService.GetAllAsync();
+            if (!await this.collectionService.RecordExistsAsync(collectionId))
+            {
+                return this.NotFound($"Collection with id {collectionId} not found.");
+            }
+
+            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            {
+                return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
+            }
+
+            var(requests, count) = await this.requestService.GetAllAsync(x => x.ResourceId == resourceId);
 
             return this.Ok(new RequestListDto(1, count, requests.Select(c => new RequestDto(c))));
         }
 
-        [HttpGet("{id}", Name = "GetRequest")]
-        public async Task<IActionResult> Get(string id)
+        [HttpGet("collections/{collectionId}/resources/{resourceId}/requests/{id}", Name = "GetRequest")]
+        public async Task<IActionResult> Get(string collectionId, string resourceId, string id)
         {
-            var result = await this.requestService.GetAsync(id);
+            if (!await this.collectionService.RecordExistsAsync(collectionId))
+            {
+                return this.NotFound($"Collection with id {collectionId} not found.");
+            }
+
+            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            {
+                return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
+            }
+
+            var result = (await this.requestService.GetAllAsync(x => x.ID == id && x.ResourceId == resourceId)).Item1.FirstOrDefault();
             if (result == null)
             {
-                return this.NotFound();
+                return this.NotFound($"Request with id {id} not found for Resource with id {resourceId} and collection with id {collectionId} not found.");
             }
 
             return this.Ok(result);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] RequestUpdateDto newRequest)
+        [HttpPost("collections/{collectionId}/resources/{resourceId}/requests")]
+        public async Task<IActionResult> Post(string collectionId, string resourceId, [FromBody] RequestUpdateDto newRequest)
         {
             if (newRequest == null)
             {
                 return this.BadRequest();
             }
 
+            if (!await this.collectionService.RecordExistsAsync(collectionId))
+            {
+                return this.NotFound($"Collection with id {collectionId} not found.");
+            }
+
+            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            {
+                return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
+            }
+
             Request requestToSave = new Request
             {
                 Name = newRequest.Name,
                 Template = newRequest.Template,
-                HttpMethod = newRequest.HttpMethod
+                HttpMethod = newRequest.HttpMethod,
+                ResourceId = resourceId
             };
             await this.requestService.AddOrUpdateAsync(requestToSave);
             return this.CreatedAtRoute("GetRequest", new { id = requestToSave.ID }, new RequestDto(requestToSave));
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(string id, [FromBody] RequestUpdateDto updatedRequest)
+        [HttpPut("collections/{collectionId}/resources/{resourceId}/requests/{id}")]
+        public async Task<IActionResult> Put(string collectionId, string resourceId, string id, [FromBody] RequestUpdateDto updatedRequest)
         {
             if (updatedRequest == null)
             {
                 return this.BadRequest();
             }
 
-            if (!await this.requestService.RecordExistsAsync(id))
+            if (!await this.collectionService.RecordExistsAsync(collectionId))
             {
-                return this.NotFound();
+                return this.NotFound($"Collection with id {collectionId} not found.");
+            }
+
+            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            {
+                return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
+            }
+
+            if (!await this.requestService.RecordExistsAsync(x => x.ID == id && x.ResourceId == resourceId))
+            {
+                return this.NotFound($"Request with id {id} not found for Resource with id {resourceId} and collection with id {collectionId} not found.");
             }
 
             var requestToSave = new Request
@@ -86,17 +134,27 @@ namespace Dalaran.Web.APIClient.Controllers
             return this.NoContent();
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(string id, [FromBody] JsonPatchDocument<RequestUpdateDto> updatedRequest)
+        [HttpPatch("collections/{collectionId}/resources/{resourceId}/requests/{id}")]
+        public async Task<IActionResult> Patch(string collectionId, string resourceId, string id, [FromBody] JsonPatchDocument<RequestUpdateDto> updatedRequest)
         {
             if (updatedRequest == null)
             {
                 return this.BadRequest();
             }
 
-            if (!await this.requestService.RecordExistsAsync(id))
+            if (!await this.collectionService.RecordExistsAsync(collectionId))
             {
-                return this.NotFound();
+                return this.NotFound($"Collection with id {collectionId} not found.");
+            }
+
+            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            {
+                return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
+            }
+
+            if (!await this.requestService.RecordExistsAsync(x => x.ID == id && x.ResourceId == resourceId))
+            {
+                return this.NotFound($"Request with id {id} not found for Resource with id {resourceId} and collection with id {collectionId} not found.");
             }
 
             RequestUpdateDto model = new RequestUpdateDto();
@@ -113,12 +171,22 @@ namespace Dalaran.Web.APIClient.Controllers
             return this.NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        [HttpDelete("collections/{collectionId}/resources/{resourceId}/requests/{id}")]
+        public async Task<IActionResult> Delete(string collectionId, string resourceId, string id)
         {
-            if (!await this.requestService.RecordExistsAsync(id))
+            if (!await this.collectionService.RecordExistsAsync(collectionId))
             {
-                return this.NotFound();
+                return this.NotFound($"Collection with id {collectionId} not found.");
+            }
+
+            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            {
+                return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
+            }
+
+            if (!await this.requestService.RecordExistsAsync(x => x.ID == id && x.ResourceId == resourceId))
+            {
+                return this.NotFound($"Request with id {id} not found for Resource with id {resourceId} and collection with id {collectionId} not found.");
             }
 
             await this.requestService.DeleteAsync(id);

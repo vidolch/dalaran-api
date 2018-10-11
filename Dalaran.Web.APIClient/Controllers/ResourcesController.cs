@@ -31,6 +31,11 @@ namespace Dalaran.Web.APIClient.Controllers
         [HttpGet("collections/{collectionId}/resources")]
         public async Task<IActionResult> GetAsync(string collectionId)
         {
+            if (!await this.collectionService.RecordExistsAsync(collectionId))
+            {
+                return this.NotFound($"Collection with id {collectionId} not found.");
+            }
+
             var(resources, count) = await this.resourceService.GetAllAsync(x => x.CollectionId == collectionId);
             return this.Ok(new ResourceListDto(1, count, resources.Select(r => new ResourceDto(r))));
         }
@@ -38,11 +43,16 @@ namespace Dalaran.Web.APIClient.Controllers
         [HttpGet("collections/{collectionId}/resources/{id}", Name = "GetResource")]
         public async Task<IActionResult> GetAsync(string collectionId, string id)
         {
+            if (!await this.collectionService.RecordExistsAsync(collectionId))
+            {
+                return this.NotFound($"Collection with id {collectionId} not found.");
+            }
+
             var result = (await this.resourceService.GetAllAsync(x => x.ID == id && x.CollectionId == collectionId)).Item1.FirstOrDefault();
 
             if (result == null)
             {
-                return this.NotFound();
+                return this.NotFound($"Resource with id {id} not found for collection with id {collectionId}.");
             }
 
             return this.Ok(new ResourceDto(result));
@@ -60,7 +70,7 @@ namespace Dalaran.Web.APIClient.Controllers
 
             if (collection == null)
             {
-                return this.NotFound(new { message = $"Collection with id {collectionId} not found." });
+                return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
             var resourceToSave = new Resource
@@ -82,9 +92,14 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.BadRequest();
             }
 
+            if (!await this.collectionService.RecordExistsAsync(collectionId))
+            {
+                return this.NotFound($"Collection with id {collectionId} not found.");
+            }
+
             if (!await this.resourceService.RecordExistsAsync(x => x.ID == id && x.CollectionId == collectionId))
             {
-                return this.NotFound();
+                return this.NotFound($"Resource with id {id} not found for collection with id {collectionId}.");
             }
 
             var resourceToSave = new Resource
@@ -107,9 +122,14 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.BadRequest();
             }
 
+            if (!await this.collectionService.RecordExistsAsync(collectionId))
+            {
+                return this.NotFound($"Collection with id {collectionId} not found.");
+            }
+
             if (!await this.resourceService.RecordExistsAsync(x => x.ID == id && x.CollectionId == collectionId))
             {
-                return this.NotFound();
+                return this.NotFound($"Resource with id {id} not found for collection with id {collectionId}.");
             }
 
             ResourceUpdateDto model = new ResourceUpdateDto();
@@ -129,9 +149,14 @@ namespace Dalaran.Web.APIClient.Controllers
         [HttpDelete("collections/{collectionId}/resources/{id}")]
         public async Task<IActionResult> DeleteAsync(string collectionId, string id)
         {
+            if (!await this.collectionService.RecordExistsAsync(collectionId))
+            {
+                return this.NotFound($"Collection with id {collectionId} not found.");
+            }
+
             if (!await this.resourceService.RecordExistsAsync(x => x.ID == id && x.CollectionId == collectionId))
             {
-                return this.NotFound();
+                return this.NotFound($"Resource with id {id} not found for collection with id {collectionId}.");
             }
 
             await this.resourceService.DeleteAsync(id);

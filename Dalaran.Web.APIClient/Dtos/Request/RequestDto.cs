@@ -14,7 +14,7 @@ namespace Dalaran.Web.APIClient.Dtos.Request
             this.Name = request.Name;
             this.Template = request.Template;
             this.HttpMethod = request.HttpMethod;
-            this.Resource = request.Resource;
+            this.ResourceId = request.ResourceId;
             this.CreatedTimestamp = request.CreatedTimestamp;
             this.UpdatedTimestamp = request.UpdatedTimestamp;
         }
@@ -27,7 +27,7 @@ namespace Dalaran.Web.APIClient.Dtos.Request
 
         public HttpMethods HttpMethod { get; set; }
 
-        public Resource Resource { get; set; }
+        public string ResourceId { get; set; }
 
         public DateTimeOffset CreatedTimestamp { get; set; }
 
