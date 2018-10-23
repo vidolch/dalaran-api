@@ -4,7 +4,9 @@
 namespace Dalaran.Web.APIClient.Dtos.Collection
 {
     using System;
+    using System.Collections;
     using Dalaran.Data.Models;
+    using Dalaran.Web.APIClient.Dtos.Resource;
 
     public class CollectionDto : BaseDto
     {
@@ -17,6 +19,8 @@ namespace Dalaran.Web.APIClient.Dtos.Collection
         }
 
         public string Name { get; set; }
+
+        public ResourceListDto Resources { get; set; }
 
         public DateTimeOffset CreatedTimestamp { get; set; }
 

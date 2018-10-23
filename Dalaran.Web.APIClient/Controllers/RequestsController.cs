@@ -12,7 +12,7 @@ namespace Dalaran.Web.APIClient.Controllers
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/requests")]
+    [Route("api")]
     [EnableCors("UI")]
     public class RequestsController : Controller
     {

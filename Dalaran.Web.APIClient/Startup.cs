@@ -9,6 +9,7 @@ namespace Dalaran.Web.APIClient
     using Dalaran.Data.Repositories.Interfaces;
     using Dalaran.Services.Data;
     using Dalaran.Services.Data.Contracts;
+    using Dalaran.Web.APIClient.Database;
     using Dalaran.Web.APIClient.Middlewares;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -59,6 +60,8 @@ namespace Dalaran.Web.APIClient
             services.AddTransient<IResourceService, ResourceService>();
             services.AddTransient<ICollectionService, CollectionService>();
 
+            services.AddSingleton<Seeder>();
+
             services.AddIdentityWithMongoStores(mongoConnectionString)
                 .AddDefaultTokenProviders();
 
@@ -74,6 +77,9 @@ namespace Dalaran.Web.APIClient
                     serializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 })
                 .AddDataAnnotations();
+
+            var seeder = services.BuildServiceProvider().GetService<Seeder>();
+            seeder.Seed().GetAwaiter();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -8,6 +8,7 @@ namespace Dalaran.Web.APIClient.Controllers
     using System.Threading.Tasks;
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
+    using Dalaran.Web.APIClient.Dtos.Request;
     using Dalaran.Web.APIClient.Dtos.Resource;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.JsonPatch;
@@ -19,13 +20,16 @@ namespace Dalaran.Web.APIClient.Controllers
     {
         private readonly IResourceService resourceService;
         private readonly ICollectionService collectionService;
+        private readonly IRequestService requestService;
 
         public ResourcesController(
             IResourceService resourceService,
-            ICollectionService collectionService)
+            ICollectionService collectionService,
+            IRequestService requestService)
         {
             this.resourceService = resourceService;
             this.collectionService = collectionService;
+            this.requestService = requestService;
         }
 
         [HttpGet("collections/{collectionId}/resources")]
@@ -43,19 +47,22 @@ namespace Dalaran.Web.APIClient.Controllers
         [HttpGet("collections/{collectionId}/resources/{id}", Name = "GetResource")]
         public async Task<IActionResult> GetAsync(string collectionId, string id)
         {
+            var result = await this.resourceService.GetAsync(id);
             if (!await this.collectionService.RecordExistsAsync(collectionId))
             {
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            var result = (await this.resourceService.GetAllAsync(x => x.ID == id && x.CollectionId == collectionId)).Item1.FirstOrDefault();
-
-            if (result == null)
+            if (result.CollectionId != collectionId)
             {
                 return this.NotFound($"Resource with id {id} not found for collection with id {collectionId}.");
             }
 
-            return this.Ok(new ResourceDto(result));
+            var requests = await this.requestService.GetAllAsync(x => x.ResourceId == id);
+            var resultDto = new ResourceDto(result);
+            resultDto.Requests = new RequestListDto(1, requests.Item2, requests.Item1.Select(x => new RequestDto(x)));
+
+            return this.Ok(resultDto);
         }
 
         [HttpPost("collections/{collectionId}/resources")]

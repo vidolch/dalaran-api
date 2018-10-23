@@ -8,6 +8,7 @@ namespace Dalaran.Web.APIClient.Controllers
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
     using Dalaran.Web.APIClient.Dtos.Collection;
+    using Dalaran.Web.APIClient.Dtos.Resource;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,14 @@ namespace Dalaran.Web.APIClient.Controllers
     public class CollectionsController : Controller
     {
         private readonly ICollectionService colletionService;
+        private readonly IResourceService resourceService;
 
-        public CollectionsController(ICollectionService collectionService)
+        public CollectionsController(
+            ICollectionService collectionService,
+            IResourceService resourceService)
         {
             this.colletionService = collectionService;
+            this.resourceService = resourceService;
         }
 
         [HttpGet]
@@ -40,7 +45,11 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound();
             }
 
-            return this.Ok(new CollectionDto(result));
+            var collectionDto = new CollectionDto(result);
+            var resources = await this.resourceService.GetAllAsync(x => x.CollectionId == collectionDto.ID);
+            collectionDto.Resources = new ResourceListDto(1, resources.Item2, resources.Item1.Select(t => new ResourceDto(t)));
+
+            return this.Ok(collectionDto);
         }
 
         [HttpPost]

@@ -8,7 +8,6 @@ namespace Dalaran.Data.Models
 
     public class BaseModel
     {
-        [Key]
         public string ID { get; set; }
 
         public DateTimeOffset CreatedTimestamp { get; set; }

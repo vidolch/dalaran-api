@@ -5,6 +5,7 @@ namespace Dalaran.Web.APIClient.Dtos.Resource
 {
     using System;
     using Dalaran.Data.Models;
+    using Dalaran.Web.APIClient.Dtos.Request;
 
     public class ResourceDto : BaseDto
     {
@@ -20,6 +21,8 @@ namespace Dalaran.Web.APIClient.Dtos.Resource
         public string Name { get; set; }
 
         public string Path { get; set; }
+
+        public RequestListDto Requests { get; set; }
 
         public DateTimeOffset CreatedTimestamp { get; set; }
 
