@@ -38,7 +38,8 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            var resource = await this.resourceService.GetAsync(resourceId);
+            if (resource == null || resource.CollectionId != collectionId)
             {
                 return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
             }
@@ -56,13 +57,14 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            var resource = await this.resourceService.GetAsync(resourceId);
+            if (resource == null || resource.CollectionId != collectionId)
             {
                 return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
             }
 
-            var result = (await this.requestService.GetAllAsync(x => x.ID == id && x.ResourceId == resourceId)).Item1.FirstOrDefault();
-            if (result == null)
+            var result = await this.requestService.GetAsync(id);
+            if (result == null || result.ResourceId != resourceId)
             {
                 return this.NotFound($"Request with id {id} not found for Resource with id {resourceId} and collection with id {collectionId} not found.");
             }
@@ -83,7 +85,8 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            var resource = await this.resourceService.GetAsync(resourceId);
+            if (resource == null || resource.CollectionId != collectionId)
             {
                 return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
             }
@@ -112,12 +115,14 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            var resource = await this.resourceService.GetAsync(resourceId);
+            if (resource == null || resource.CollectionId != collectionId)
             {
                 return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
             }
 
-            if (!await this.requestService.RecordExistsAsync(x => x.ID == id && x.ResourceId == resourceId))
+            var result = await this.requestService.GetAsync(id);
+            if (result == null || result.ResourceId != resourceId)
             {
                 return this.NotFound($"Request with id {id} not found for Resource with id {resourceId} and collection with id {collectionId} not found.");
             }
@@ -147,12 +152,14 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            var resource = await this.resourceService.GetAsync(resourceId);
+            if (resource == null || resource.CollectionId != collectionId)
             {
                 return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
             }
 
-            if (!await this.requestService.RecordExistsAsync(x => x.ID == id && x.ResourceId == resourceId))
+            var result = await this.requestService.GetAsync(id);
+            if (result == null || result.ResourceId != resourceId)
             {
                 return this.NotFound($"Request with id {id} not found for Resource with id {resourceId} and collection with id {collectionId} not found.");
             }
@@ -179,12 +186,14 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            if (!await this.resourceService.RecordExistsAsync(x => x.ID == resourceId && x.CollectionId == collectionId))
+            var resource = await this.resourceService.GetAsync(resourceId);
+            if (resource == null || resource.CollectionId != collectionId)
             {
                 return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
             }
 
-            if (!await this.requestService.RecordExistsAsync(x => x.ID == id && x.ResourceId == resourceId))
+            var result = await this.requestService.GetAsync(id);
+            if (result == null || result.ResourceId != resourceId)
             {
                 return this.NotFound($"Request with id {id} not found for Resource with id {resourceId} and collection with id {collectionId} not found.");
             }
