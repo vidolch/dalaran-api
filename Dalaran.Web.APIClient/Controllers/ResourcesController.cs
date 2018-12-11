@@ -104,7 +104,8 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            if (!await this.resourceService.RecordExistsAsync(x => x.ID == id && x.CollectionId == collectionId))
+            var resource = await this.resourceService.GetAsync(id);
+            if (resource == null && resource.CollectionId == collectionId)
             {
                 return this.NotFound($"Resource with id {id} not found for collection with id {collectionId}.");
             }
@@ -113,6 +114,7 @@ namespace Dalaran.Web.APIClient.Controllers
             {
                 ID = id,
                 Name = updatedResource.Name,
+                CollectionId = updatedResource.CollectionId,
                 Path = updatedResource.Path
             };
 
@@ -134,7 +136,8 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            if (!await this.resourceService.RecordExistsAsync(x => x.ID == id && x.CollectionId == collectionId))
+            var resource = await this.resourceService.GetAsync(id);
+            if (resource == null && resource.CollectionId == collectionId)
             {
                 return this.NotFound($"Resource with id {id} not found for collection with id {collectionId}.");
             }
@@ -147,6 +150,7 @@ namespace Dalaran.Web.APIClient.Controllers
             {
                 ID = id,
                 Path = model.Path,
+                CollectionId = model.CollectionId,
                 Name = model.Name
             };
             await this.resourceService.AddOrUpdateAsync(resourceToSave);
@@ -161,7 +165,8 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            if (!await this.resourceService.RecordExistsAsync(x => x.ID == id && x.CollectionId == collectionId))
+            var resource = await this.resourceService.GetAsync(id);
+            if (resource == null && resource.CollectionId == collectionId)
             {
                 return this.NotFound($"Resource with id {id} not found for collection with id {collectionId}.");
             }

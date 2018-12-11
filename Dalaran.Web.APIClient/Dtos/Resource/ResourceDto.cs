@@ -14,6 +14,7 @@ namespace Dalaran.Web.APIClient.Dtos.Resource
             this.Name = resource.Name;
             this.Path = resource.Path;
             this.ID = resource.ID;
+            this.CollectionId = resource.CollectionId;
             this.CreatedTimestamp = resource.CreatedTimestamp;
             this.UpdatedTimestamp = resource.UpdatedTimestamp;
         }
@@ -21,6 +22,8 @@ namespace Dalaran.Web.APIClient.Dtos.Resource
         public string Name { get; set; }
 
         public string Path { get; set; }
+
+        public string CollectionId { get; set; }
 
         public RequestListDto Requests { get; set; }
 

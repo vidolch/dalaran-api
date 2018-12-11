@@ -14,5 +14,9 @@ namespace Dalaran.Web.APIClient.Dtos.Resource
         [Required]
         [MinLength(1)]
         public string Path { get; set; }
+
+        [Required]
+        [MinLength(1)]
+        public string CollectionId { get; set; }
     }
 }
