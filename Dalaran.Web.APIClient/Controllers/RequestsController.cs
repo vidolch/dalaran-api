@@ -69,7 +69,7 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Request with id {id} not found for Resource with id {resourceId} and collection with id {collectionId} not found.");
             }
 
-            return this.Ok(result);
+            return this.Ok(new RequestDto(result));
         }
 
         [HttpPost("collections/{collectionId}/resources/{resourceId}/requests")]

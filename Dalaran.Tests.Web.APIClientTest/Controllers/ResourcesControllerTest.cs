@@ -6,6 +6,7 @@ namespace Tests.Web.APIClientTest.Controllers
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
@@ -21,13 +22,21 @@ namespace Tests.Web.APIClientTest.Controllers
         [Fact]
         public async Task CanGetAllResourcesAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
+
             var resourceService = new Mock<IResourceService>();
-            resourceService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestResources());
-            var controller = new ResourcesController(resourceService.Object);
+            resourceService.Setup(repo => repo.GetAllAsync(It.IsAny<Expression<Func<Resource, bool>>>(), It.IsAny<int>(), It.IsAny<int>())).Returns(this.GetTestResources());
+
+            var requestService = new Mock<IRequestService>();
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.GetAsync();
+            var result = await controller.GetAsync(collectionId);
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result);
@@ -39,13 +48,22 @@ namespace Tests.Web.APIClientTest.Controllers
         [Fact]
         public async Task CanGetNoMocksAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
+
             var resourceService = new Mock<IResourceService>();
             resourceService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(Task.FromResult((new List<Resource>().AsEnumerable(), (long)0)));
-            var controller = new ResourcesController(resourceService.Object);
+
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.GetAsync();
+            var result = await controller.GetAsync(collectionId);
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result);
@@ -57,7 +75,12 @@ namespace Tests.Web.APIClientTest.Controllers
         [Fact]
         public async Task CanGetMockByIdAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
+
             string testId = "id1";
             DateTimeOffset testCreated = new DateTime(2017, 12, 2);
             string testTemplate = "Test Template";
@@ -66,13 +89,17 @@ namespace Tests.Web.APIClientTest.Controllers
             {
                 ID = testId,
                 Name = testTemplate,
-                CreatedTimestamp = testCreated
+                CreatedTimestamp = testCreated,
+                CollectionId = collectionId
             }));
 
-            var controller = new ResourcesController(resourceService.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.GetAsync(testId);
+            var result = await controller.GetAsync(collectionId, testId);
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result);
@@ -86,24 +113,37 @@ namespace Tests.Web.APIClientTest.Controllers
         [Fact]
         public async Task CanGetNoMockByIdAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
+
             string testId = "id1";
             var resourceService = new Mock<IResourceService>();
             resourceService.Setup(repo => repo.GetAsync(testId)).Returns(Task.FromResult((Resource)null));
 
-            var controller = new ResourcesController(resourceService.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.GetAsync(testId);
+            var result = await controller.GetAsync(collectionId, testId);
 
             // Assert
-            var viewResult = Assert.IsType<NotFoundResult>(result);
+            var viewResult = Assert.IsType<NotFoundObjectResult>(result);
         }
 
         [Fact]
         public async Task CanCreateResourceAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.GetAsync(collectionId)).Returns(Task.FromResult(new Collection { ID = collectionId }));
+
             Resource testResource = new Resource
             {
                 Name = "Test Template"
@@ -115,10 +155,13 @@ namespace Tests.Web.APIClientTest.Controllers
             var resourceService = new Mock<IResourceService>();
             resourceService.Setup(repo => repo.AddOrUpdateAsync(testResource)).Returns(Task.FromResult(testResource));
 
-            var controller = new ResourcesController(resourceService.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.PostAsync(testResourceDto);
+            var result = await controller.PostAsync(collectionId, testResourceDto);
 
             // Assert
             var viewResult = Assert.IsType<CreatedAtRouteResult>(result);
@@ -130,13 +173,21 @@ namespace Tests.Web.APIClientTest.Controllers
         [Fact]
         public async Task CannotCreateResourceWhenEmptyResourceAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
+
             var resourceService = new Mock<IResourceService>();
 
-            var controller = new ResourcesController(resourceService.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.PostAsync(null);
+            var result = await controller.PostAsync(collectionId, null);
 
             // Assert
             var viewResult = Assert.IsType<BadRequestResult>(result);
@@ -145,24 +196,34 @@ namespace Tests.Web.APIClientTest.Controllers
         [Fact]
         public async Task CanPutResourceAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
+
             ResourceUpdateDto testResourceDto = new ResourceUpdateDto
             {
-                Name = "Test Template"
+                Name = "Test Template",
+                CollectionId = collectionId
             };
             Resource testResource = new Resource
             {
-                Name = "Test Template"
+                Name = "Test Template",
+                CollectionId = collectionId
             };
             string testID = "id1";
             var resourceService = new Mock<IResourceService>();
             resourceService.Setup(repo => repo.AddOrUpdateAsync(testResource)).Returns(Task.FromResult(testResource));
-            resourceService.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
+            resourceService.Setup(repo => repo.GetAsync(testID)).Returns(Task.FromResult(testResource));
 
-            var controller = new ResourcesController(resourceService.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.PutAsync(testID, testResourceDto);
+            var result = await controller.PutAsync(collectionId, testID, testResourceDto);
 
             // Assert
             var viewResult = Assert.IsType<NoContentResult>(result);
@@ -171,13 +232,21 @@ namespace Tests.Web.APIClientTest.Controllers
         [Fact]
         public async Task CannotPutResourceWhenEmptyRequestAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
+
             var resourceService = new Mock<IResourceService>();
 
-            var controller = new ResourcesController(resourceService.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.PutAsync("id1", null);
+            var result = await controller.PutAsync(collectionId, "id1", null);
 
             // Assert
             var viewResult = Assert.IsType<BadRequestResult>(result);
@@ -186,20 +255,29 @@ namespace Tests.Web.APIClientTest.Controllers
         [Fact]
         public async Task CanPatchResourceAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
+
             Resource testResource = new Resource
             {
-                Name = "Test Template"
+                Name = "Test Template",
+                CollectionId = collectionId
             };
             string testID = "id1";
             var resourceService = new Mock<IResourceService>();
             resourceService.Setup(repo => repo.AddOrUpdateAsync(testResource)).Returns(Task.FromResult(testResource));
-            resourceService.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
+            resourceService.Setup(repo => repo.GetAsync(testID)).Returns(Task.FromResult(testResource));
 
-            var controller = new ResourcesController(resourceService.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.PatchAsync(testID, new JsonPatchDocument<ResourceUpdateDto>());
+            var result = await controller.PatchAsync(collectionId, testID, new JsonPatchDocument<ResourceUpdateDto>());
 
             // Assert
             var viewResult = Assert.IsType<NoContentResult>(result);
@@ -208,13 +286,21 @@ namespace Tests.Web.APIClientTest.Controllers
         [Fact]
         public async Task CannotPatchResourceWhenEmptyRequestAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
+
             var resourceService = new Mock<IResourceService>();
 
-            var controller = new ResourcesController(resourceService.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.PatchAsync("id1", null);
+            var result = await controller.PatchAsync(collectionId, "id1", null);
 
             // Assert
             var viewResult = Assert.IsType<BadRequestResult>(result);
@@ -223,19 +309,28 @@ namespace Tests.Web.APIClientTest.Controllers
         [Fact]
         public async Task CanDeleteResourceAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
+
             Resource testResource = new Resource
             {
-                Name = "Test Template"
+                Name = "Test Template",
+                CollectionId = collectionId
             };
             string testID = "id1";
             var resourceService = new Mock<IResourceService>();
-            resourceService.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
+            resourceService.Setup(repo => repo.GetAsync(testID)).Returns(Task.FromResult(testResource));
 
-            var controller = new ResourcesController(resourceService.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.DeleteAsync("id1");
+            var result = await controller.DeleteAsync(collectionId, "id1");
 
             // Assert
             var viewResult = Assert.IsType<NoContentResult>(result);
@@ -244,16 +339,42 @@ namespace Tests.Web.APIClientTest.Controllers
         [Fact]
         public async Task CannotDeleteResourceWhenIDNotExistsAsync()
         {
+            const string collectionId = "collectionId";
+
             // Arrange
+            var collectionService = new Mock<ICollectionService>();
+            collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
+
             var resourceService = new Mock<IResourceService>();
 
-            var controller = new ResourcesController(resourceService.Object);
+            var requestService = new Mock<IRequestService>();
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
+
+            var controller = new ResourcesController(resourceService.Object, collectionService.Object, requestService.Object);
 
             // Act
-            var result = await controller.DeleteAsync("id1");
+            var result = await controller.DeleteAsync(collectionId, "id1");
 
             // Assert
-            var viewResult = Assert.IsType<NotFoundResult>(result);
+            var viewResult = Assert.IsType<NotFoundObjectResult>(result);
+        }
+
+        private Task<(IEnumerable<Request>, long)> GetTestRequests()
+        {
+            var mocks = new List<Request>();
+            mocks.Add(new Request()
+            {
+                CreatedTimestamp = new DateTime(2016, 7, 2),
+                ID = "id1",
+                Template = "Test One"
+            });
+            mocks.Add(new Request()
+            {
+                CreatedTimestamp = new DateTime(2016, 7, 3),
+                ID = "id2",
+                Template = "Test Two"
+            });
+            return Task.FromResult((mocks.AsEnumerable(), (long)mocks.Count));
         }
 
         private Task<(IEnumerable<Resource>, long)> GetTestResources()

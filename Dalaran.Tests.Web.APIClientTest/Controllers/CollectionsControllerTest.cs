@@ -24,7 +24,10 @@ namespace Tests.Web.APIClientTest.Controllers
             // Arrange
             var collectionService = new Mock<ICollectionService>();
             collectionService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestCollections());
-            var controller = new CollectionsController(collectionService.Object);
+
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.GetAsync();
@@ -42,7 +45,10 @@ namespace Tests.Web.APIClientTest.Controllers
             // Arrange
             var collectionService = new Mock<ICollectionService>();
             collectionService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(Task.FromResult((new List<Collection>().AsEnumerable(), (long)0)));
-            var controller = new CollectionsController(collectionService.Object);
+
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.GetAsync();
@@ -69,7 +75,9 @@ namespace Tests.Web.APIClientTest.Controllers
                 CreatedTimestamp = testCreated
             }));
 
-            var controller = new CollectionsController(collectionService.Object);
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.GetAsync(testId);
@@ -91,7 +99,9 @@ namespace Tests.Web.APIClientTest.Controllers
             var collectionService = new Mock<ICollectionService>();
             collectionService.Setup(repo => repo.GetAsync(testId)).Returns(Task.FromResult((Collection)null));
 
-            var controller = new CollectionsController(collectionService.Object);
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.GetAsync(testId);
@@ -117,7 +127,9 @@ namespace Tests.Web.APIClientTest.Controllers
             var collectionService = new Mock<ICollectionService>();
             collectionService.Setup(repo => repo.AddOrUpdateAsync(testCollection)).Returns(Task.FromResult(testCollection));
 
-            var controller = new CollectionsController(collectionService.Object);
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.PostAsync(testCollectionDto);
@@ -135,7 +147,9 @@ namespace Tests.Web.APIClientTest.Controllers
             // Arrange
             var collectionService = new Mock<ICollectionService>();
 
-            var controller = new CollectionsController(collectionService.Object);
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.PostAsync(null);
@@ -163,7 +177,9 @@ namespace Tests.Web.APIClientTest.Controllers
             collectionService.Setup(repo => repo.AddOrUpdateAsync(testCollection)).Returns(Task.FromResult(testCollection));
             collectionService.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
 
-            var controller = new CollectionsController(collectionService.Object);
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.PutAsync(testID, testCollectionDto);
@@ -178,7 +194,9 @@ namespace Tests.Web.APIClientTest.Controllers
             // Arrange
             var collectionService = new Mock<ICollectionService>();
 
-            var controller = new CollectionsController(collectionService.Object);
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.PutAsync("id1", null);
@@ -201,7 +219,9 @@ namespace Tests.Web.APIClientTest.Controllers
             collectionService.Setup(repo => repo.AddOrUpdateAsync(testCollection)).Returns(Task.FromResult(testCollection));
             collectionService.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
 
-            var controller = new CollectionsController(collectionService.Object);
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.PatchAsync(testID, new JsonPatchDocument<CollectionUpdateDto>());
@@ -216,7 +236,9 @@ namespace Tests.Web.APIClientTest.Controllers
             // Arrange
             var collectionService = new Mock<ICollectionService>();
 
-            var controller = new CollectionsController(collectionService.Object);
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.PatchAsync("id1", null);
@@ -237,7 +259,9 @@ namespace Tests.Web.APIClientTest.Controllers
             var collectionService = new Mock<ICollectionService>();
             collectionService.Setup(repo => repo.RecordExistsAsync(testID)).Returns(Task.FromResult(true));
 
-            var controller = new CollectionsController(collectionService.Object);
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.DeleteAsync("id1");
@@ -252,7 +276,9 @@ namespace Tests.Web.APIClientTest.Controllers
             // Arrange
             var collectionService = new Mock<ICollectionService>();
 
-            var controller = new CollectionsController(collectionService.Object);
+            var resourceService = new Mock<IResourceService>();
+
+            var controller = new CollectionsController(collectionService.Object, resourceService.Object);
 
             // Act
             var result = await controller.DeleteAsync("id1");

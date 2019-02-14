@@ -10,7 +10,7 @@ namespace Dalaran.Web.APIClient.Dtos.Request
     {
         public RequestDto(Request request)
         {
-            this.Id = request.ID;
+            this.ID = request.ID;
             this.Name = request.Name;
             this.Template = request.Template;
             this.HttpMethod = request.HttpMethod;
@@ -18,8 +18,6 @@ namespace Dalaran.Web.APIClient.Dtos.Request
             this.CreatedTimestamp = request.CreatedTimestamp;
             this.UpdatedTimestamp = request.UpdatedTimestamp;
         }
-
-        public string Id { get; set; }
 
         public string Name { get; set; }
 

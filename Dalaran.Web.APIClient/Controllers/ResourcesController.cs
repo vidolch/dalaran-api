@@ -47,13 +47,13 @@ namespace Dalaran.Web.APIClient.Controllers
         [HttpGet("collections/{collectionId}/resources/{id}", Name = "GetResource")]
         public async Task<IActionResult> GetAsync(string collectionId, string id)
         {
-            var result = await this.resourceService.GetAsync(id);
             if (!await this.collectionService.RecordExistsAsync(collectionId))
             {
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            if (result.CollectionId != collectionId)
+            var result = await this.resourceService.GetAsync(id);
+            if (result == null || result.CollectionId != collectionId)
             {
                 return this.NotFound($"Resource with id {id} not found for collection with id {collectionId}.");
             }
@@ -166,7 +166,7 @@ namespace Dalaran.Web.APIClient.Controllers
             }
 
             var resource = await this.resourceService.GetAsync(id);
-            if (resource == null && resource.CollectionId == collectionId)
+            if (resource == null || resource.CollectionId != collectionId)
             {
                 return this.NotFound($"Resource with id {id} not found for collection with id {collectionId}.");
             }
