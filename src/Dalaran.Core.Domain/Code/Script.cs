@@ -52,12 +52,14 @@ namespace Dalaran.Core.Domain.Code
             return this.sb.ToString();
         }
 
-        public Script IncreaseTabs(int with = 1) {
+        public Script IncreaseTabs(int with = 1)
+        {
             this.tabs += with;
             return this;
         }
 
-        public Script DecreaseTabs(int with = 1) {
+        public Script DecreaseTabs(int with = 1)
+        {
             this.tabs = this.tabs != 0 ? this.tabs -= with : this.tabs;
             return this;
         }

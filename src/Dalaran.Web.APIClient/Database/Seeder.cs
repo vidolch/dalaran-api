@@ -33,7 +33,7 @@ namespace Dalaran.Web.APIClient.Database
             var collection1 = new Collection
             {
                 ID = "collection1",
-                Name = "Collection 1"
+                Name = "Collection 1",
             };
             await this.collectionService.AddOrUpdateAsync(collection1);
 
@@ -42,7 +42,7 @@ namespace Dalaran.Web.APIClient.Database
                 ID = "resource1",
                 Name = "Resource 1",
                 Path = "resource1",
-                CollectionId = collection1.ID
+                CollectionId = collection1.ID,
             };
             await this.resourceService.AddOrUpdateAsync(resource1);
 
@@ -52,7 +52,7 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Get Request",
                 Template = "Get Request",
                 HttpMethod = HttpMethods.GET,
-                ResourceId = resource1.ID
+                ResourceId = resource1.ID,
             };
 
             var request2 = new Request
@@ -61,7 +61,7 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Head Request",
                 Template = "Head Request",
                 HttpMethod = HttpMethods.HEAD,
-                ResourceId = resource1.ID
+                ResourceId = resource1.ID,
             };
 
             var request3 = new Request
@@ -70,7 +70,7 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Post Request",
                 Template = "Post Request",
                 HttpMethod = HttpMethods.POST,
-                ResourceId = resource1.ID
+                ResourceId = resource1.ID,
             };
 
             var request4 = new Request
@@ -79,7 +79,7 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Put Request",
                 Template = "Put Request",
                 HttpMethod = HttpMethods.PUT,
-                ResourceId = resource1.ID
+                ResourceId = resource1.ID,
             };
 
             var request5 = new Request
@@ -88,7 +88,7 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Delete Request",
                 Template = "Delete Request",
                 HttpMethod = HttpMethods.DELETE,
-                ResourceId = resource1.ID
+                ResourceId = resource1.ID,
             };
 
             var request6 = new Request
@@ -97,7 +97,7 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Connect Request",
                 Template = "Connect Request",
                 HttpMethod = HttpMethods.CONNECT,
-                ResourceId = resource1.ID
+                ResourceId = resource1.ID,
             };
 
             var request7 = new Request
@@ -106,7 +106,7 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Options Request",
                 Template = "Options Request",
                 HttpMethod = HttpMethods.OPTIONS,
-                ResourceId = resource1.ID
+                ResourceId = resource1.ID,
             };
 
             var request8 = new Request
@@ -115,7 +115,7 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Trace Request",
                 Template = "Trance Request",
                 HttpMethod = HttpMethods.TRACE,
-                ResourceId = resource1.ID
+                ResourceId = resource1.ID,
             };
 
             var request9 = new Request
@@ -124,7 +124,7 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Patch Request",
                 Template = "Patch request",
                 HttpMethod = HttpMethods.PATCH,
-                ResourceId = resource1.ID
+                ResourceId = resource1.ID,
             };
 
             await this.requestService.AddOrUpdateAsync(request1);

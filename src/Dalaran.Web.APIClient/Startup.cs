@@ -69,9 +69,6 @@ namespace Dalaran.Web.APIClient
 
             services.AddSingleton<Seeder>();
 
-            services.AddIdentityWithMongoStores(mongoConnectionString)
-                .AddDefaultTokenProviders();
-
             services
                 .AddMvcCore(options =>
                 {

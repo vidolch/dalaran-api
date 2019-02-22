@@ -16,6 +16,6 @@ namespace Dalaran.Data.Models
         CONNECT = 32,
         OPTIONS = 64,
         TRACE = 128,
-        PATCH = 252
+        PATCH = 252,
     }
 }

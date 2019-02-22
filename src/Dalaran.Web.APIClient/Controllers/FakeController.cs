@@ -45,8 +45,9 @@ namespace Dalaran.Web.APIClient.Controllers
                 return r;
             });
 
-            var api = this.apiGenerator.GenerateApi(new ApiConfiguration {
-                Collections = new List<Collection> { collection }
+            var api = this.apiGenerator.GenerateApi(new ApiConfiguration
+            {
+                Collections = new List<Collection> { collection },
             });
 
             return this.File(api.Archive, "application/zip");

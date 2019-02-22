@@ -44,7 +44,7 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
             }
 
-            var(requests, count) = await this.requestService.GetAllAsync(x => x.ResourceId == resourceId);
+            var (requests, count) = await this.requestService.GetAllAsync(x => x.ResourceId == resourceId);
 
             return this.Ok(new RequestListDto(1, count, requests.Select(c => new RequestDto(c))));
         }
@@ -97,7 +97,7 @@ namespace Dalaran.Web.APIClient.Controllers
                 Template = newRequest.Template,
                 HttpMethod = newRequest.HttpMethod,
                 ResponseType = newRequest.ResponseType,
-                ResourceId = resourceId
+                ResourceId = resourceId,
             };
             await this.requestService.AddOrUpdateAsync(requestToSave);
             return this.CreatedAtRoute("GetRequest", new { id = requestToSave.ID }, new RequestDto(requestToSave));

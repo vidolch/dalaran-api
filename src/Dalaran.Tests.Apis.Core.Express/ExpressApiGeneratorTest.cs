@@ -6,7 +6,6 @@ namespace Dalaran.Tests.Apis.Core.Express
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Compression;
-    using System.Threading.Tasks;
     using Dalaran.Core.Express;
     using Dalaran.Data.Models;
     using Xunit;
@@ -39,16 +38,16 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request1",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.GET,
-                                Name = "Request 1"
+                                Name = "Request 1",
                             },
                             new Request
                             {
                                 ID = "request2",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.POST,
-                                Name = "Request 2"
-                            }
-                        }
+                                Name = "Request 2",
+                            },
+                        },
                     },
                     new Resource
                     {
@@ -62,25 +61,25 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request3",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.HEAD,
-                                Name = "Request 3"
+                                Name = "Request 3",
                             },
                             new Request
                             {
                                 ID = "request4",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.PATCH,
-                                Name = "Request 4"
+                                Name = "Request 4",
                             },
                             new Request
                             {
                                 ID = "request5",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.PUT,
-                                Name = "Request 5"
-                            }
-                        }
-                    }
-                }
+                                Name = "Request 5",
+                            },
+                        },
+                    },
+                },
             };
 
             var collection2 = new Collection
@@ -101,41 +100,42 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request6",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.DELETE,
-                                Name = "Request 6"
+                                Name = "Request 6",
                             },
                             new Request
                             {
                                 ID = "request7",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.CONNECT,
-                                Name = "Request 7"
+                                Name = "Request 7",
                             },
                             new Request
                             {
                                 ID = "request8",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.TRACE,
-                                Name = "Request 8"
+                                Name = "Request 8",
                             },
                             new Request
                             {
                                 ID = "request9",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.OPTIONS,
-                                Name = "Request 9"
-                            }
-                        }
-                    }
-                }
+                                Name = "Request 9",
+                            },
+                        },
+                    },
+                },
             };
+
             // Act
             var result = apiGenerator.GenerateApi(new Dalaran.Core.Domain.ApiConfiguration
             {
                 Collections = new List<Collection>
                 {
                     collection,
-                    collection2
-                }
+                    collection2,
+                },
             });
 
             // Assert

@@ -44,7 +44,7 @@ namespace Tests.Web.APIClientTest.Controllers
         {
             // Arrange
             var collectionService = new Mock<ICollectionService>();
-            collectionService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(Task.FromResult((new List<Collection>().AsEnumerable(), (long)0)));
+            collectionService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(Task.FromResult((new List<Collection>().AsEnumerable(), 0L)));
 
             var resourceService = new Mock<IResourceService>();
 
@@ -72,7 +72,7 @@ namespace Tests.Web.APIClientTest.Controllers
             {
                 ID = testId,
                 Name = testTemplate,
-                CreatedTimestamp = testCreated
+                CreatedTimestamp = testCreated,
             }));
 
             var resourceService = new Mock<IResourceService>();
@@ -116,12 +116,12 @@ namespace Tests.Web.APIClientTest.Controllers
             // Arrange
             Collection testCollection = new Collection
             {
-                Name = "Test Template"
+                Name = "Test Template",
             };
 
             CollectionUpdateDto testCollectionDto = new CollectionUpdateDto
             {
-                Name = "Test Template"
+                Name = "Test Template",
             };
 
             var collectionService = new Mock<ICollectionService>();
@@ -164,12 +164,12 @@ namespace Tests.Web.APIClientTest.Controllers
             // Arrange
             Collection testCollection = new Collection
             {
-                Name = "Test Template"
+                Name = "Test Template",
             };
 
             CollectionUpdateDto testCollectionDto = new CollectionUpdateDto
             {
-                Name = "Test Template"
+                Name = "Test Template",
             };
 
             string testID = "id1";
@@ -211,7 +211,7 @@ namespace Tests.Web.APIClientTest.Controllers
             // Arrange
             Collection testCollection = new Collection
             {
-                Name = "Test Template"
+                Name = "Test Template",
             };
 
             string testID = "id1";
@@ -253,7 +253,7 @@ namespace Tests.Web.APIClientTest.Controllers
             // Arrange
             Collection testCollection = new Collection
             {
-                Name = "Test Template"
+                Name = "Test Template",
             };
             string testID = "id1";
             var collectionService = new Mock<ICollectionService>();
@@ -293,12 +293,12 @@ namespace Tests.Web.APIClientTest.Controllers
             mocks.Add(new Collection()
             {
                 ID = "id1",
-                Name = "Test One"
+                Name = "Test One",
             });
             mocks.Add(new Collection()
             {
                 ID = "id2",
-                Name = "Test Two"
+                Name = "Test Two",
             });
             return Task.FromResult((mocks.AsEnumerable(), (long)mocks.Count));
         }

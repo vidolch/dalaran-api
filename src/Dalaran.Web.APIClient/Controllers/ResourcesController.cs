@@ -40,7 +40,7 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Collection with id {collectionId} not found.");
             }
 
-            var(resources, count) = await this.resourceService.GetAllAsync(x => x.CollectionId == collectionId);
+            var (resources, count) = await this.resourceService.GetAllAsync(x => x.CollectionId == collectionId);
             return this.Ok(new ResourceListDto(1, count, resources.Select(r => new ResourceDto(r))));
         }
 
@@ -84,7 +84,7 @@ namespace Dalaran.Web.APIClient.Controllers
             {
                 Name = newResource.Name,
                 Path = newResource.Path,
-                CollectionId = collectionId
+                CollectionId = collectionId,
             };
 
             await this.resourceService.AddOrUpdateAsync(resourceToSave);
@@ -115,7 +115,7 @@ namespace Dalaran.Web.APIClient.Controllers
                 ID = id,
                 Name = updatedResource.Name,
                 CollectionId = updatedResource.CollectionId,
-                Path = updatedResource.Path
+                Path = updatedResource.Path,
             };
 
             updatedResource.ID = id;
@@ -151,7 +151,7 @@ namespace Dalaran.Web.APIClient.Controllers
                 ID = id,
                 Path = model.Path,
                 CollectionId = model.CollectionId,
-                Name = model.Name
+                Name = model.Name,
             };
             await this.resourceService.AddOrUpdateAsync(resourceToSave);
             return this.NoContent();

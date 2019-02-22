@@ -31,7 +31,7 @@ namespace Dalaran.Web.APIClient.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var(collections, count) = await this.colletionService.GetAllAsync();
+            var (collections, count) = await this.colletionService.GetAllAsync();
 
             return this.Ok(new CollectionListDto(1, count, collections.Select(c => new CollectionDto(c))));
         }
@@ -67,7 +67,7 @@ namespace Dalaran.Web.APIClient.Controllers
 
             var collectionToSave = new Collection
             {
-                Name = newCollection.Name
+                Name = newCollection.Name,
             };
 
             await this.colletionService.AddOrUpdateAsync(collectionToSave);
@@ -96,7 +96,7 @@ namespace Dalaran.Web.APIClient.Controllers
             var collectionToSave = new Collection
             {
                 ID = id,
-                Name = updatedCollection.Name
+                Name = updatedCollection.Name,
             };
 
             await this.colletionService.AddOrUpdateAsync(collectionToSave);
@@ -122,7 +122,7 @@ namespace Dalaran.Web.APIClient.Controllers
             var collectionToSave = new Collection
             {
                 ID = id,
-                Name = model.Name
+                Name = model.Name,
             };
             await this.colletionService.AddOrUpdateAsync(collectionToSave);
             return this.NoContent();

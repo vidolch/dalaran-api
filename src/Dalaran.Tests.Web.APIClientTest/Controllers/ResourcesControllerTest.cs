@@ -55,7 +55,7 @@ namespace Tests.Web.APIClientTest.Controllers
             collectionService.Setup(repo => repo.RecordExistsAsync(collectionId)).Returns(Task.FromResult(true));
 
             var resourceService = new Mock<IResourceService>();
-            resourceService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(Task.FromResult((new List<Resource>().AsEnumerable(), (long)0)));
+            resourceService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(Task.FromResult((new List<Resource>().AsEnumerable(), 0L)));
 
             var requestService = new Mock<IRequestService>();
             requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestRequests());
@@ -90,7 +90,7 @@ namespace Tests.Web.APIClientTest.Controllers
                 ID = testId,
                 Name = testTemplate,
                 CreatedTimestamp = testCreated,
-                CollectionId = collectionId
+                CollectionId = collectionId,
             }));
 
             var requestService = new Mock<IRequestService>();
@@ -146,11 +146,11 @@ namespace Tests.Web.APIClientTest.Controllers
 
             Resource testResource = new Resource
             {
-                Name = "Test Template"
+                Name = "Test Template",
             };
             ResourceUpdateDto testResourceDto = new ResourceUpdateDto
             {
-                Name = "Test Template"
+                Name = "Test Template",
             };
             var resourceService = new Mock<IResourceService>();
             resourceService.Setup(repo => repo.AddOrUpdateAsync(testResource)).Returns(Task.FromResult(testResource));
@@ -205,12 +205,12 @@ namespace Tests.Web.APIClientTest.Controllers
             ResourceUpdateDto testResourceDto = new ResourceUpdateDto
             {
                 Name = "Test Template",
-                CollectionId = collectionId
+                CollectionId = collectionId,
             };
             Resource testResource = new Resource
             {
                 Name = "Test Template",
-                CollectionId = collectionId
+                CollectionId = collectionId,
             };
             string testID = "id1";
             var resourceService = new Mock<IResourceService>();
@@ -264,7 +264,7 @@ namespace Tests.Web.APIClientTest.Controllers
             Resource testResource = new Resource
             {
                 Name = "Test Template",
-                CollectionId = collectionId
+                CollectionId = collectionId,
             };
             string testID = "id1";
             var resourceService = new Mock<IResourceService>();
@@ -318,7 +318,7 @@ namespace Tests.Web.APIClientTest.Controllers
             Resource testResource = new Resource
             {
                 Name = "Test Template",
-                CollectionId = collectionId
+                CollectionId = collectionId,
             };
             string testID = "id1";
             var resourceService = new Mock<IResourceService>();
@@ -366,13 +366,13 @@ namespace Tests.Web.APIClientTest.Controllers
             {
                 CreatedTimestamp = new DateTime(2016, 7, 2),
                 ID = "id1",
-                Template = "Test One"
+                Template = "Test One",
             });
             mocks.Add(new Request()
             {
                 CreatedTimestamp = new DateTime(2016, 7, 3),
                 ID = "id2",
-                Template = "Test Two"
+                Template = "Test Two",
             });
             return Task.FromResult((mocks.AsEnumerable(), (long)mocks.Count));
         }
@@ -383,12 +383,12 @@ namespace Tests.Web.APIClientTest.Controllers
             mocks.Add(new Resource()
             {
                 ID = "id1",
-                Name = "Test One"
+                Name = "Test One",
             });
             mocks.Add(new Resource()
             {
                 ID = "id2",
-                Name = "Test Two"
+                Name = "Test Two",
             });
             return Task.FromResult((mocks.AsEnumerable(), (long)mocks.Count));
         }

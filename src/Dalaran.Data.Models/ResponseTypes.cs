@@ -9,6 +9,6 @@ namespace Dalaran.Data.Models
     public enum ResponseTypes
     {
         JSON = 1,
-        XML = 2
+        XML = 2,
     }
 }

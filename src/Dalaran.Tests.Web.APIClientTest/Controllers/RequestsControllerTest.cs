@@ -61,7 +61,7 @@ namespace Tests.Web.APIClientTest.Controllers
             reosurceService.Setup(repo => repo.GetAsync(resourceId)).Returns(this.GetTestResource(collectionId));
 
             var requestService = new Mock<IRequestService>();
-            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(Task.FromResult((new List<Request>().AsEnumerable(), (long)0)));
+            requestService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(Task.FromResult((new List<Request>().AsEnumerable(), 0L)));
             var controller = new RequestsController(collectionService.Object, reosurceService.Object, requestService.Object);
 
             // Act
@@ -96,7 +96,7 @@ namespace Tests.Web.APIClientTest.Controllers
                 ID = testId,
                 CreatedTimestamp = testCreated,
                 Template = testTemplate,
-                ResourceId = resourceId
+                ResourceId = resourceId,
             }));
 
             var controller = new RequestsController(collectionService.Object, reosurceService.Object, requestService.Object);
@@ -154,7 +154,7 @@ namespace Tests.Web.APIClientTest.Controllers
 
             Request testRequest = new Request
             {
-                Template = "Test Template"
+                Template = "Test Template",
             };
             var requestService = new Mock<IRequestService>();
             requestService.Setup(repo => repo.AddOrUpdateAsync(testRequest)).Returns(Task.FromResult(testRequest));
@@ -164,7 +164,7 @@ namespace Tests.Web.APIClientTest.Controllers
             RequestUpdateDto requestDto = new RequestUpdateDto
             {
                 Name = "Test Name",
-                Template = testRequest.Template
+                Template = testRequest.Template,
             };
 
             // Act
@@ -217,7 +217,7 @@ namespace Tests.Web.APIClientTest.Controllers
             Request testRequest = new Request
             {
                 Template = "Test Template",
-                ResourceId = resourceId
+                ResourceId = resourceId,
             };
             string testID = "id1";
             var requestService = new Mock<IRequestService>();
@@ -229,7 +229,7 @@ namespace Tests.Web.APIClientTest.Controllers
             RequestUpdateDto requestDto = new RequestUpdateDto
             {
                 Name = "Test Name",
-                Template = testRequest.Template
+                Template = testRequest.Template,
             };
 
             // Act
@@ -279,7 +279,7 @@ namespace Tests.Web.APIClientTest.Controllers
             Request testRequest = new Request
             {
                 Template = "Test Template",
-                ResourceId = resourceId
+                ResourceId = resourceId,
             };
             string testID = "id1";
             var requestService = new Mock<IRequestService>();
@@ -336,7 +336,7 @@ namespace Tests.Web.APIClientTest.Controllers
             {
                 ID = "id1",
                 ResourceId = resourceId,
-                Template = "Test Template"
+                Template = "Test Template",
             };
             var requestService = new Mock<IRequestService>();
             requestService.Setup(repo => repo.GetAsync(testRequest.ID)).Returns(Task.FromResult(testRequest));
@@ -381,26 +381,28 @@ namespace Tests.Web.APIClientTest.Controllers
             {
                 CreatedTimestamp = new DateTime(2016, 7, 2),
                 ID = "id1",
-                Template = "Test One"
+                Template = "Test One",
             });
             mocks.Add(new Request()
             {
                 CreatedTimestamp = new DateTime(2016, 7, 3),
                 ID = "id2",
-                Template = "Test Two"
+                Template = "Test Two",
             });
             return Task.FromResult((mocks.AsEnumerable(), (long)mocks.Count));
         }
 
         private Task<Resource> GetTestResource(string collectionId)
         {
-            var mock = new Resource {
+            var mock = new Resource
+            {
                 CreatedTimestamp = new DateTime(2016, 7, 2),
                 ID = "id1",
                 Name = "Test One",
                 Path = "test",
-                CollectionId = collectionId
+                CollectionId = collectionId,
             };
+
             return Task.FromResult(mock);
         }
     }
