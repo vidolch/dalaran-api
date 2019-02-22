@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Vidol Chalamov.
 // See the LICENSE file in the project root for more information.
 
-namespace Dalaran.Core.Domain
+namespace Dalaran.Core.Express
 {
-    public abstract class Api
+    using Dalaran.Core.Domain;
+
+    public class ExpressApi : Api
     {
-        public byte[] Archive { get; set; }
     }
 }

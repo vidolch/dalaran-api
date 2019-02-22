@@ -6,6 +6,13 @@ namespace Dalaran.Data.Models
     public enum HttpMethods
     {
         GET,
-        POST
+        HEAD,
+        POST,
+        PUT,
+        DELETE,
+        CONNECT,
+        OPTIONS,
+        TRACE,
+        PATCH
     }
 }

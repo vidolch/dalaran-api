@@ -45,31 +45,11 @@ namespace Dalaran.Web.APIClient.Controllers
                 return r;
             });
 
-            this.apiGenerator.GenerateApi(new ApiConfiguration {
+            var api = this.apiGenerator.GenerateApi(new ApiConfiguration {
                 Collections = new List<Collection> { collection }
             });
 
-            var result = await this.requestRepository.GetForMethodAsync(id, HttpMethods.GET);
-
-            if (result == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(result);
-        }
-
-        [HttpPost("{id}", Name = "PostFake")]
-        public async Task<IActionResult> PostAsync(string id, [FromBody]object content)
-        {
-            var result = await this.requestRepository.GetForMethodAsync(id, HttpMethods.POST);
-
-            if (result == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(result);
+            return this.File(api.Archive, "application/zip");
         }
     }
 }
