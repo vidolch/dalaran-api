@@ -8,12 +8,12 @@ namespace Dalaran.Web.APIClient.Controllers
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
     using Dalaran.Web.APIClient.Dtos.Request;
-    using Microsoft.AspNetCore.Cors;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api")]
-    [EnableCors("UI")]
+    [Authorize]
     public class RequestsController : Controller
     {
         private readonly ICollectionService collectionService;

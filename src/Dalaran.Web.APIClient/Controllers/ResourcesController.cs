@@ -3,19 +3,18 @@
 
 namespace Dalaran.Web.APIClient.Controllers
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
     using Dalaran.Web.APIClient.Dtos.Request;
     using Dalaran.Web.APIClient.Dtos.Resource;
-    using Microsoft.AspNetCore.Cors;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api")]
-    [EnableCors("UI")]
+    [Authorize]
     public class ResourcesController : Controller
     {
         private readonly IResourceService resourceService;

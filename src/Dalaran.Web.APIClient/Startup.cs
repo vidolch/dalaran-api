@@ -3,6 +3,7 @@
 
 namespace Dalaran.Web.APIClient
 {
+    using System.Runtime.InteropServices;
     using Dalaran.Core.Domain;
     using Dalaran.Core.Express;
     using Dalaran.Data.Models;
@@ -13,6 +14,7 @@ namespace Dalaran.Web.APIClient
     using Dalaran.Services.Data.Contracts;
     using Dalaran.Web.APIClient.Database;
     using Dalaran.Web.APIClient.Middlewares;
+    using IdentityServer4.AccessTokenValidation;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -20,19 +22,57 @@ namespace Dalaran.Web.APIClient
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
     using Newtonsoft.Json.Serialization;
+    using Serilog;
 
     public class Startup
     {
+        private readonly Settings settings;
+
         public Startup(IConfiguration configuration)
         {
-            this.Configuration = configuration;
+            this.settings = configuration.Get<Settings>(options => options.BindNonPublicProperties = true);
+            this.settings.Validate();
         }
-
-        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services
+                .AddMvcCore(options =>
+                {
+                    options.Filters.Add(new RequestLogAttribute());
+                })
+                .AddJsonFormatters(serializerSettings =>
+                {
+                    serializerSettings.ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() };
+                    serializerSettings.Converters.Add(new StringEnumConverter());
+                    serializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                })
+                .AddAuthorization()
+                .AddDataAnnotations();
+
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(
+                    options =>
+                    {
+                        options.Authority = this.settings.Auth.Authority;
+                        options.ApiName = this.settings.Auth.ClientId;
+                        options.ApiSecret = this.settings.Auth.Secret;
+
+                        options.RequireHttpsMetadata = false;
+                    });
+
+            Log.Information($"Auth server: {this.settings.Auth.Authority}");
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Log.Information("Platform is Windows");
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                Log.Information("Platform is Linux");
+            }
+
             services.AddCors(options =>
             {
                 options.AddPolicy(
@@ -43,8 +83,7 @@ namespace Dalaran.Web.APIClient
                     .AllowAnyMethod());
             });
 
-            var mongoConnectionString = this.Configuration.GetConnectionString("mongo");
-            var mongoUrl = new MongoDB.Driver.MongoUrl(mongoConnectionString);
+            var mongoUrl = new MongoDB.Driver.MongoUrl(this.settings.Mongo.ConnectionString);
 
             services.AddSingleton<IDBRepository<Request>>(
                 new MongoRepository<Request>(mongoUrl, nameof(Request)));
@@ -63,23 +102,10 @@ namespace Dalaran.Web.APIClient
 
             services.AddSingleton<IApiGenerator>(o =>
             {
-                return new ExpressApiGenerator(this.Configuration.GetValue<string>("templatePath"));
+                return new ExpressApiGenerator(this.settings.Template.Path);
             });
 
             services.AddSingleton<Seeder>();
-
-            services
-                .AddMvcCore(options =>
-                {
-                    options.Filters.Add(new RequestLogAttribute());
-                })
-                .AddJsonFormatters(serializerSettings =>
-                {
-                    serializerSettings.ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() };
-                    serializerSettings.Converters.Add(new StringEnumConverter());
-                    serializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                })
-                .AddDataAnnotations();
 
             var seeder = services.BuildServiceProvider().GetService<Seeder>();
             seeder.Seed().GetAwaiter();
@@ -94,6 +120,7 @@ namespace Dalaran.Web.APIClient
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

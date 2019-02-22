@@ -35,7 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dalaran.Core.Express", "Dal
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apis", "Apis", "{71935AED-3EA1-46B7-B7C4-38253F7C6A9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dalaran.Tests.Apis.Core.Express", "Dalaran.Tests.Apis.Core.Express\Dalaran.Tests.Apis.Core.Express.csproj", "{2C0BA0A6-05DF-4EB6-AE00-3FBC3E95EB39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dalaran.Tests.Apis.Core.Express", "Dalaran.Tests.Apis.Core.Express\Dalaran.Tests.Apis.Core.Express.csproj", "{2C0BA0A6-05DF-4EB6-AE00-3FBC3E95EB39}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dalaran.Console", "Dalaran.Console\Dalaran.Console.csproj", "{183D5D66-5F34-4C11-AA57-03BDA321E9BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +81,10 @@ Global
 		{2C0BA0A6-05DF-4EB6-AE00-3FBC3E95EB39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C0BA0A6-05DF-4EB6-AE00-3FBC3E95EB39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C0BA0A6-05DF-4EB6-AE00-3FBC3E95EB39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{183D5D66-5F34-4C11-AA57-03BDA321E9BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{183D5D66-5F34-4C11-AA57-03BDA321E9BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{183D5D66-5F34-4C11-AA57-03BDA321E9BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{183D5D66-5F34-4C11-AA57-03BDA321E9BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +101,7 @@ Global
 		{2CBF3150-4297-4799-8870-3DC4D1261289} = {9FDED4F4-5590-48D3-BA24-B5432A7EE5DC}
 		{71935AED-3EA1-46B7-B7C4-38253F7C6A9B} = {C5A2FA2A-B782-4A00-B720-CEEAC4A218B8}
 		{2C0BA0A6-05DF-4EB6-AE00-3FBC3E95EB39} = {71935AED-3EA1-46B7-B7C4-38253F7C6A9B}
+		{183D5D66-5F34-4C11-AA57-03BDA321E9BB} = {E54A6D87-F269-4A09-8A64-195C2DD016AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {660C07D2-E02D-4EB5-883F-87B91BD8E6D8}

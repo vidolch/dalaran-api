@@ -9,11 +9,11 @@ namespace Dalaran.Web.APIClient.Controllers
     using Dalaran.Core.Domain;
     using Dalaran.Data.Models;
     using Dalaran.Data.Repositories.Interfaces;
-    using Microsoft.AspNetCore.Cors;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/fake")]
-    [EnableCors("UI")]
+    [Authorize]
     public class FakeController : Controller
     {
         private readonly IRequestRepository requestRepository;
