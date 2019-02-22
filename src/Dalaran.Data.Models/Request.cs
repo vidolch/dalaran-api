@@ -11,6 +11,8 @@ namespace Dalaran.Data.Models
 
         public HttpMethods HttpMethod { get; set; }
 
+        public ResponseTypes ResponseType { get; set; }
+
         public string ResourceId { get; set; }
     }
 }

@@ -18,5 +18,8 @@ namespace Dalaran.Web.APIClient.Dtos.Request
 
         [Required]
         public HttpMethods HttpMethod { get; set; }
+
+        [Required]
+        public ResponseTypes ResponseType { get; set; }
     }
 }

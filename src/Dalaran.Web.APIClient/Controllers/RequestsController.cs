@@ -96,6 +96,7 @@ namespace Dalaran.Web.APIClient.Controllers
                 Name = newRequest.Name,
                 Template = newRequest.Template,
                 HttpMethod = newRequest.HttpMethod,
+                ResponseType = newRequest.ResponseType,
                 ResourceId = resourceId
             };
             await this.requestService.AddOrUpdateAsync(requestToSave);
@@ -132,7 +133,8 @@ namespace Dalaran.Web.APIClient.Controllers
                 ID = id,
                 Name = updatedRequest.Name,
                 Template = updatedRequest.Template,
-                HttpMethod = updatedRequest.HttpMethod
+                HttpMethod = updatedRequest.HttpMethod,
+                ResponseType = updatedRequest.ResponseType,
             };
 
             await this.requestService.AddOrUpdateAsync(requestToSave);
@@ -172,7 +174,8 @@ namespace Dalaran.Web.APIClient.Controllers
                 ID = id,
                 Name = model.Name,
                 Template = model.Template,
-                HttpMethod = model.HttpMethod
+                HttpMethod = model.HttpMethod,
+                ResponseType = model.ResponseType,
             };
             await this.requestService.AddOrUpdateAsync(requestToSave);
             return this.NoContent();

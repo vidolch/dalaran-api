@@ -3,16 +3,19 @@
 
 namespace Dalaran.Data.Models
 {
+    using System;
+
+    [Flags]
     public enum HttpMethods
     {
-        GET,
-        HEAD,
-        POST,
-        PUT,
-        DELETE,
-        CONNECT,
-        OPTIONS,
-        TRACE,
-        PATCH
+        GET = 1,
+        HEAD = 2,
+        POST = 4,
+        PUT = 8,
+        DELETE = 16,
+        CONNECT = 32,
+        OPTIONS = 64,
+        TRACE = 128,
+        PATCH = 252
     }
 }
