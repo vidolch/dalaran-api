@@ -75,12 +75,13 @@ namespace Dalaran.Web.APIClient
 
             services.AddCors(options =>
             {
-                options.AddPolicy(
-                    "UI",
-                    builder => builder
-                    .WithOrigins("http://localhost:4200")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod());
+                options.AddPolicy("spa", policy =>
+                {
+                    policy.WithOrigins(this.settings.Auth.AllowedCors)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
             });
 
             var mongoUrl = new MongoDB.Driver.MongoUrl(this.settings.Mongo.ConnectionString);
@@ -114,7 +115,7 @@ namespace Dalaran.Web.APIClient
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseCors("UI");
+            app.UseCors("spa");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

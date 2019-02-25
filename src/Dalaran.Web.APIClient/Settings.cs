@@ -70,6 +70,8 @@ namespace Dalaran.Web.APIClient
 
             public string Secret { get; set; }
 
+            public string[] AllowedCors { get; set; }
+
             public bool IsValid() => !this.GetValidationErrors().Any();
 
             public IEnumerable<string> GetValidationErrors()
@@ -85,6 +87,11 @@ namespace Dalaran.Web.APIClient
                 }
 
                 if (string.IsNullOrEmpty(this.Secret))
+                {
+                    yield return $"'{{0}}:{nameof(this.Secret).ToLowerInvariant()}' is null or empty.";
+                }
+
+                if (this.AllowedCors == null || this.AllowedCors.Count() == 0)
                 {
                     yield return $"'{{0}}:{nameof(this.Secret).ToLowerInvariant()}' is null or empty.";
                 }
