@@ -4,6 +4,7 @@
 namespace Dalaran.Web.APIClient
 {
     using System.Runtime.InteropServices;
+    using System.Threading.Tasks;
     using Dalaran.Core.Domain;
     using Dalaran.Core.Express;
     using Dalaran.Data.Models;
@@ -116,6 +117,22 @@ namespace Dalaran.Web.APIClient
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseCors("spa");
+
+            app.Use(async (context, nextMiddleware) =>
+            {
+                context.Response.OnStarting(() =>
+                {
+                    context.Response.Headers.Add("Access-Control-Expose-Headers", "Location,Content-Disposition");
+                    if (context.Request.Method == "GET")
+                    {
+                        context.Response.Headers.Add("Cache-Control", "no-cache");
+                    }
+
+                    return Task.FromResult(0);
+                });
+                await nextMiddleware();
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

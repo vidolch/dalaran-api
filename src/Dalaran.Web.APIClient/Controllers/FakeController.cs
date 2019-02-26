@@ -50,7 +50,7 @@ namespace Dalaran.Web.APIClient.Controllers
                 Collections = new List<Collection> { collection },
             });
 
-            return this.File(api.Archive, "application/zip");
+            return this.File(api.Archive, "application/zip", $"{collection.Name}.zip");
         }
     }
 }
