@@ -3,6 +3,7 @@
 
 namespace Dalaran.Web.APIClient.Controllers
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using Dalaran.Data.Models;
@@ -29,9 +30,9 @@ namespace Dalaran.Web.APIClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync(int page = default, int size = 10)
         {
-            var (collections, count) = await this.colletionService.GetAllAsync();
+            var (collections, count) = await this.colletionService.GetAllAsync(page: Math.Max(0, page), size: size < 0 ? 20 : Math.Min(size, 100));
 
             return this.Ok(new CollectionListDto(1, count, collections.Select(c => new CollectionDto(c))));
         }

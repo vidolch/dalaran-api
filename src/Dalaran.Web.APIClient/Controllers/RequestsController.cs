@@ -135,6 +135,7 @@ namespace Dalaran.Web.APIClient.Controllers
                 Template = updatedRequest.Template,
                 HttpMethod = updatedRequest.HttpMethod,
                 ResponseType = updatedRequest.ResponseType,
+                ResourceId = resourceId,
             };
 
             await this.requestService.AddOrUpdateAsync(requestToSave);
