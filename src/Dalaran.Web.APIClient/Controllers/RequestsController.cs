@@ -7,6 +7,7 @@ namespace Dalaran.Web.APIClient.Controllers
     using System.Threading.Tasks;
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
+    using Dalaran.Web.APIClient.Dtos;
     using Dalaran.Web.APIClient.Dtos.Request;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.JsonPatch;
@@ -91,14 +92,8 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Resource with id {resourceId} not found for collection with id {collectionId} not found.");
             }
 
-            Request requestToSave = new Request
-            {
-                Name = newRequest.Name,
-                Template = newRequest.Template,
-                HttpMethod = newRequest.HttpMethod,
-                ResponseType = newRequest.ResponseType,
-                ResourceId = resourceId,
-            };
+            Request requestToSave = newRequest.ToModel(null, resourceId);
+
             await this.requestService.AddOrUpdateAsync(requestToSave);
             return this.CreatedAtRoute("GetRequest", new { id = requestToSave.ID }, new RequestDto(requestToSave));
         }
@@ -128,15 +123,7 @@ namespace Dalaran.Web.APIClient.Controllers
                 return this.NotFound($"Request with id {id} not found for Resource with id {resourceId} and collection with id {collectionId} not found.");
             }
 
-            var requestToSave = new Request
-            {
-                ID = id,
-                Name = updatedRequest.Name,
-                Template = updatedRequest.Template,
-                HttpMethod = updatedRequest.HttpMethod,
-                ResponseType = updatedRequest.ResponseType,
-                ResourceId = resourceId,
-            };
+            Request requestToSave = updatedRequest.ToModel(id, resourceId);
 
             await this.requestService.AddOrUpdateAsync(requestToSave);
             return this.NoContent();
@@ -170,14 +157,8 @@ namespace Dalaran.Web.APIClient.Controllers
             RequestUpdateDto model = new RequestUpdateDto();
             updatedRequest.ApplyTo(model);
 
-            var requestToSave = new Request
-            {
-                ID = id,
-                Name = model.Name,
-                Template = model.Template,
-                HttpMethod = model.HttpMethod,
-                ResponseType = model.ResponseType,
-            };
+            Request requestToSave = model.ToModel(id, resourceId);
+
             await this.requestService.AddOrUpdateAsync(requestToSave);
             return this.NoContent();
         }

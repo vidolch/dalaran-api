@@ -3,6 +3,7 @@
 
 namespace Dalaran.Web.APIClient.Database
 {
+    using System.Net;
     using System.Threading.Tasks;
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
@@ -52,6 +53,8 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Get Request",
                 Template = "Get Request",
                 HttpMethod = HttpMethods.GET,
+                ResponseCode = HttpStatusCode.Accepted,
+                ResponseType = ResponseTypes.JSON,
                 ResourceId = resource1.ID,
             };
 
@@ -61,6 +64,8 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Head Request",
                 Template = "Head Request",
                 HttpMethod = HttpMethods.HEAD,
+                ResponseCode = HttpStatusCode.BadGateway,
+                ResponseType = ResponseTypes.JSON,
                 ResourceId = resource1.ID,
             };
 
@@ -70,6 +75,8 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Post Request",
                 Template = "Post Request",
                 HttpMethod = HttpMethods.POST,
+                ResponseCode = HttpStatusCode.Conflict,
+                ResponseType = ResponseTypes.JSON,
                 ResourceId = resource1.ID,
             };
 
@@ -79,6 +86,8 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Put Request",
                 Template = "Put Request",
                 HttpMethod = HttpMethods.PUT,
+                ResponseCode = HttpStatusCode.MethodNotAllowed,
+                ResponseType = ResponseTypes.XML,
                 ResourceId = resource1.ID,
             };
 
@@ -88,6 +97,8 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Delete Request",
                 Template = "Delete Request",
                 HttpMethod = HttpMethods.DELETE,
+                ResponseCode = HttpStatusCode.Forbidden,
+                ResponseType = ResponseTypes.XML,
                 ResourceId = resource1.ID,
             };
 
@@ -97,6 +108,8 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Connect Request",
                 Template = "Connect Request",
                 HttpMethod = HttpMethods.CONNECT,
+                ResponseCode = HttpStatusCode.Unauthorized,
+                ResponseType = ResponseTypes.XML,
                 ResourceId = resource1.ID,
             };
 
@@ -106,6 +119,8 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Options Request",
                 Template = "Options Request",
                 HttpMethod = HttpMethods.OPTIONS,
+                ResponseCode = HttpStatusCode.UseProxy,
+                ResponseType = ResponseTypes.JSON,
                 ResourceId = resource1.ID,
             };
 
@@ -115,6 +130,8 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Trace Request",
                 Template = "Trance Request",
                 HttpMethod = HttpMethods.TRACE,
+                ResponseCode = HttpStatusCode.UnprocessableEntity,
+                ResponseType = ResponseTypes.XML,
                 ResourceId = resource1.ID,
             };
 
@@ -124,6 +141,8 @@ namespace Dalaran.Web.APIClient.Database
                 Name = "Test Patch Request",
                 Template = "Patch request",
                 HttpMethod = HttpMethods.PATCH,
+                ResponseCode = HttpStatusCode.Accepted,
+                ResponseType = ResponseTypes.JSON,
                 ResourceId = resource1.ID,
             };
 

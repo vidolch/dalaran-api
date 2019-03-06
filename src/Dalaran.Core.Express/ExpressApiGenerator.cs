@@ -3,11 +3,13 @@
 
 namespace Dalaran.Core.Express
 {
+    using System;
     using System.IO;
     using System.IO.Compression;
     using System.Text;
     using Dalaran.Core.Domain;
     using Dalaran.Core.Domain.Code;
+    using Dalaran.Core.Express.Code;
 
     public class ExpressApiGenerator : IApiGenerator
     {
@@ -65,56 +67,47 @@ namespace Dalaran.Core.Express
 
                     foreach (var request in resource.Requests)
                     {
+                        var path = $"/{resource.Path.TrimStart('/')}";
+                        if (string.IsNullOrEmpty(request.Path))
+                        {
+                            path += $"/{request.Path.TrimStart('/')}";
+                        }
+
+                        RequestMethod requestMethod;
                         switch (request.HttpMethod)
                         {
                             case Data.Models.HttpMethods.GET:
-                                routes.AddLine($"app.get('/{resource.Path}', function (req, res) {{");
-                                routes.IncreaseTabs().AddLine($"res.send('{request.Template}')");
-                                routes.DecreaseTabs().AddLine($"}});");
+                                requestMethod = new GetRequestMethod();
                                 break;
                             case Data.Models.HttpMethods.HEAD:
-                                routes.AddLine($"app.head('/{resource.Path}', function (req, res) {{");
-                                routes.IncreaseTabs().AddLine($"res.send('{request.Template}')");
-                                routes.DecreaseTabs().AddLine($"}});");
+                                requestMethod = new HeadRequestMethod();
                                 break;
                             case Data.Models.HttpMethods.POST:
-                                routes.AddLine($"app.post('/{resource.Path}', function (req, res) {{");
-                                routes.IncreaseTabs().AddLine($"res.send('{request.Template}')");
-                                routes.DecreaseTabs().AddLine($"}});");
+                                requestMethod = new PostRequestMethod();
                                 break;
                             case Data.Models.HttpMethods.PUT:
-                                routes.AddLine($"app.put('/{resource.Path}', function (req, res) {{");
-                                routes.IncreaseTabs().AddLine($"res.send('{request.Template}')");
-                                routes.DecreaseTabs().AddLine($"}});");
+                                requestMethod = new PutRequestMethod();
                                 break;
                             case Data.Models.HttpMethods.DELETE:
-                                routes.AddLine($"app.delete('/{resource.Path}', function (req, res) {{");
-                                routes.IncreaseTabs().AddLine($"res.send('{request.Template}')");
-                                routes.DecreaseTabs().AddLine($"}});");
+                                requestMethod = new DeleteRequestMethod();
                                 break;
                             case Data.Models.HttpMethods.CONNECT:
-                                routes.AddLine($"app.connect('/{resource.Path}', function (req, res) {{");
-                                routes.IncreaseTabs().AddLine($"res.send('{request.Template}')");
-                                routes.DecreaseTabs().AddLine($"}});");
+                                requestMethod = new ConnectRequestMethod();
                                 break;
                             case Data.Models.HttpMethods.OPTIONS:
-                                routes.AddLine($"app.options('/{resource.Path}', function (req, res) {{");
-                                routes.IncreaseTabs().AddLine($"res.send('{request.Template}')");
-                                routes.DecreaseTabs().AddLine($"}});");
+                                requestMethod = new OptionsRequestMethod();
                                 break;
                             case Data.Models.HttpMethods.TRACE:
-                                routes.AddLine($"app.trance('/{resource.Path}', function (req, res) {{");
-                                routes.IncreaseTabs().AddLine($"res.send('{request.Template}')");
-                                routes.DecreaseTabs().AddLine($"}});");
+                                requestMethod = new TraceRequestMethod();
                                 break;
                             case Data.Models.HttpMethods.PATCH:
-                                routes.AddLine($"app.patch('/{resource.Path}', function (req, res) {{");
-                                routes.IncreaseTabs().AddLine($"res.send('{request.Template}')");
-                                routes.DecreaseTabs().AddLine($"}});");
+                                requestMethod = new PatchRequestMethod();
                                 break;
                             default:
-                                break;
+                                throw new ArgumentException("Unsupported Http Method.");
                         }
+
+                        routes = requestMethod.GetRequest(routes, resource, request);
 
                         routes.AddLine();
                     }

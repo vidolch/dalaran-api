@@ -4,6 +4,7 @@
 namespace Dalaran.Web.APIClient.Dtos.Request
 {
     using System.ComponentModel.DataAnnotations;
+    using System.Net;
     using Dalaran.Data.Models;
 
     public class RequestUpdateDto : BaseDto
@@ -11,6 +12,8 @@ namespace Dalaran.Web.APIClient.Dtos.Request
         [Required]
         [MinLength(3)]
         public string Name { get; set; }
+
+        public string Path { get; set; }
 
         [Required]
         [MinLength(2)]
@@ -21,5 +24,8 @@ namespace Dalaran.Web.APIClient.Dtos.Request
 
         [Required]
         public ResponseTypes ResponseType { get; set; }
+
+        [Required]
+        public HttpStatusCode ResponseCode { get; set; }
     }
 }
