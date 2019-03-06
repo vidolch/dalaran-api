@@ -4,9 +4,12 @@
 namespace Dalaran.Core.Express
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Compression;
+    using System.Linq;
     using System.Text;
+    using System.Text.RegularExpressions;
     using Dalaran.Core.Domain;
     using Dalaran.Core.Domain.Code;
     using Dalaran.Core.Express.Code;
@@ -67,12 +70,6 @@ namespace Dalaran.Core.Express
 
                     foreach (var request in resource.Requests)
                     {
-                        var path = $"/{resource.Path.TrimStart('/')}";
-                        if (string.IsNullOrEmpty(request.Path))
-                        {
-                            path += $"/{request.Path.TrimStart('/')}";
-                        }
-
                         RequestMethod requestMethod;
                         switch (request.HttpMethod)
                         {
