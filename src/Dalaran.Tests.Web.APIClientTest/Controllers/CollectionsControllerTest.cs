@@ -6,6 +6,7 @@ namespace Tests.Web.APIClientTest.Controllers
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Dalaran.Data.Models;
     using Dalaran.Services.Data.Contracts;
@@ -23,7 +24,7 @@ namespace Tests.Web.APIClientTest.Controllers
         {
             // Arrange
             var collectionService = new Mock<ICollectionService>();
-            collectionService.Setup(repo => repo.GetAllAsync(null, 0, 20)).Returns(this.GetTestCollections());
+            collectionService.Setup(repo => repo.GetAllAsync(It.IsAny<Expression<Func<Collection, bool>>>(), It.IsAny<int>(), It.IsAny<int>())).Returns(this.GetTestCollections());
 
             var resourceService = new Mock<IResourceService>();
 

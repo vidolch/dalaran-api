@@ -6,6 +6,7 @@ namespace Dalaran.Tests.Apis.Core.Express
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Compression;
+    using System.Net;
     using Dalaran.Core.Express;
     using Dalaran.Data.Models;
     using Xunit;
@@ -38,6 +39,8 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request1",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.GET,
+                                ResponseCode = HttpStatusCode.Accepted,
+                                ResponseType = ResponseTypes.JSON,
                                 Name = "Request 1",
                             },
                             new Request
@@ -45,6 +48,8 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request2",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.POST,
+                                ResponseCode = HttpStatusCode.Forbidden,
+                                ResponseType = ResponseTypes.JSON,
                                 Name = "Request 2",
                             },
                         },
@@ -61,6 +66,8 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request3",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.HEAD,
+                                ResponseCode = HttpStatusCode.NotFound,
+                                ResponseType = ResponseTypes.XML,
                                 Name = "Request 3",
                             },
                             new Request
@@ -68,6 +75,8 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request4",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.PATCH,
+                                ResponseCode = HttpStatusCode.Redirect,
+                                ResponseType = ResponseTypes.JSON,
                                 Name = "Request 4",
                             },
                             new Request
@@ -75,6 +84,8 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request5",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.PUT,
+                                ResponseCode = HttpStatusCode.Unused,
+                                ResponseType = ResponseTypes.XML,
                                 Name = "Request 5",
                             },
                         },
@@ -100,6 +111,8 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request6",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.DELETE,
+                                ResponseCode = HttpStatusCode.Forbidden,
+                                ResponseType = ResponseTypes.XML,
                                 Name = "Request 6",
                             },
                             new Request
@@ -107,6 +120,8 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request7",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.CONNECT,
+                                ResponseCode = HttpStatusCode.UnsupportedMediaType,
+                                ResponseType = ResponseTypes.JSON,
                                 Name = "Request 7",
                             },
                             new Request
@@ -114,6 +129,8 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request8",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.TRACE,
+                                ResponseCode = HttpStatusCode.BadGateway,
+                                ResponseType = ResponseTypes.XML,
                                 Name = "Request 8",
                             },
                             new Request
@@ -121,6 +138,8 @@ namespace Dalaran.Tests.Apis.Core.Express
                                 ID = "request9",
                                 Template = "Template",
                                 HttpMethod = HttpMethods.OPTIONS,
+                                ResponseCode = HttpStatusCode.Continue,
+                                ResponseType = ResponseTypes.JSON,
                                 Name = "Request 9",
                             },
                         },
@@ -145,43 +164,70 @@ var app = express();
 // Resource Test Resource
 
 app.get('/resource1', function (req, res) {
-	res.send('Template')
+	res.status(202);
+	res.set('Content-Type', 'application/json');
+	var template = 'Template';
+	res.send(template)
 });
 
 app.post('/resource1', function (req, res) {
-	res.send('Template')
+	res.status(403);
+	res.set('Content-Type', 'application/json');
+	var template = 'Template';
+	res.send(template)
 });
 
 // Resource Test Resource 2
 
 app.head('/resource2', function (req, res) {
-	res.send('Template')
+	res.status(404);
+	res.set('Content-Type', 'text/xml');
+	var template = 'Template';
+	res.send(template)
 });
 
 app.patch('/resource2', function (req, res) {
-	res.send('Template')
+	res.status(302);
+	res.set('Content-Type', 'application/json');
+	var template = 'Template';
+	res.send(template)
 });
 
 app.put('/resource2', function (req, res) {
-	res.send('Template')
+	res.status(306);
+	res.set('Content-Type', 'text/xml');
+	var template = 'Template';
+	res.send(template)
 });
 
 // Resource Test Resource
 
 app.delete('/resource1', function (req, res) {
-	res.send('Template')
+	res.status(403);
+	res.set('Content-Type', 'text/xml');
+	var template = 'Template';
+	res.send(template)
 });
 
 app.connect('/resource1', function (req, res) {
-	res.send('Template')
+	res.status(415);
+	res.set('Content-Type', 'application/json');
+	var template = 'Template';
+	res.send(template)
 });
 
-app.trance('/resource1', function (req, res) {
-	res.send('Template')
+app.trace('/resource1', function (req, res) {
+	res.status(502);
+	res.set('Content-Type', 'text/xml');
+	var template = 'Template';
+	res.send(template)
 });
 
 app.options('/resource1', function (req, res) {
-	res.send('Template')
+	res.status(100);
+	res.set('Content-Type', 'application/json');
+	var template = 'Template';
+	res.send(template)
 });
 
 
@@ -200,7 +246,8 @@ app.listen(3000, function () {
                         {
                             using (var entryStream = new StreamReader(entry.Open()))
                             {
-                                Assert.Equal(expectedJsFile, entryStream.ReadToEnd());
+                                var resultString = entryStream.ReadToEnd();
+                                Assert.Equal(expectedJsFile, resultString);
                             }
                         }
                     }
