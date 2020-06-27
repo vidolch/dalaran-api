@@ -12,7 +12,7 @@ The tests should run from Visual Studio
 
 ## Ironclad configuration
 
-In order to configure Iconclad
+In order to configure Ironclad
 
 ```
 dotnet run -- apis add dalaran_api 512bitpassword -d "Dalaran Web API" -c role -c email -c username -v
